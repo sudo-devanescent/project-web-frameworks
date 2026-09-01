@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HotelGest - Sistema de Gestión Hotelera (Prototipo)</title>
+
+<!-- ============================================================
+     LIBRERÍAS EXTERNAS (CDN)
+     - Bootstrap 5: framework de front end (grid, componentes, utilidades)
+     - Bootstrap Icons: iconografía para navbar, tarjetas y botones
+============================================================= -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+    /* ============================================================
+       VARIABLES DE COLOR (paleta oficial del proyecto)
+       Se definen como variables CSS para reutilizarlas en todo
+       el documento sin repetir códigos hexadecimales.
+    ============================================================= */
+    :root {
+        --color-primario: #407cb1;      /* Azul principal: navbar, botones primarios */
+        --color-secundario: #265b92;    /* Azul oscuro: hover, footer, énfasis */
+        --color-acento: #becddd;        /* Azul claro: fondos suaves, tarjetas destacadas */
+        --color-fondo: #fcfcfd;         /* Fondo general de la página */
+        --color-texto: #151f28;         /* Texto principal, alto contraste */
+        --color-muted: #f2f5f7;         /* Fondo de secciones secundarias */
+        --color-texto-muted: #627284;   /* Texto secundario / descripciones */
+        --color-borde: #e0e6eb;         /* Bordes de tarjetas, inputs, tablas */
+        --color-error: #ef4444;         /* Estados de error / cancelación */
+    }
+
+    body {
+        background-color: var(--color-fondo);
+        color: var(--color-texto);
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+
+    /* ---------- Utilidades de color reutilizables ---------- */
+    .bg-primario   { background-color: var(--color-primario) !important; }
+    .bg-secundario { background-color: var(--color-secundario) !important; }
+    .bg-acento     { background-color: var(--color-acento) !important; }
+    .bg-muted      { background-color: var(--color-muted) !important; }
+    .texto-muted-personalizado { color: var(--color-texto-muted) !important; }
+
+    .btn-primario {
+        background-color: var(--color-primario);
+        border-color: var(--color-primario);
+        color: #ffffff;
+    }
+    .btn-primario:hover {
+        background-color: var(--color-secundario);
+        border-color: var(--color-secundario);
+        color: #ffffff;
+    }
+
+    /* ---------- Navbar ---------- */
+    .navbar-hotel {
+        background-color: var(--color-primario);
+    }
+    .navbar-hotel .nav-link {
+        color: #ffffff !important;
+        opacity: 0.9;
+    }
+    .navbar-hotel .nav-link.active,
+    .navbar-hotel .nav-link:hover {
+        opacity: 1;
+        font-weight: 600;
+        border-bottom: 2px solid #ffffff;
+    }
+
+    /* ---------- Footer ---------- */
+    .footer-hotel {
+        background-color: var(--color-secundario);
+        color: #ffffff;
+    }
+
+    /* ---------- Tarjetas del dashboard ---------- */
+    .tarjeta-resumen {
+        border: 1px solid var(--color-borde);
+        border-left: 4px solid var(--color-primario);
+        background-color: #ffffff;
+        transition: transform 0.15s ease-in-out;
+    }
+    .tarjeta-resumen:hover {
+        transform: translateY(-2px);
+    }
+    .icono-resumen {
+        font-size: 1.8rem;
+        color: var(--color-primario);
+    }
+
+    /* ---------- Pantalla de login ---------- */
+    .contenedor-login {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(160deg, var(--color-acento) 0%, var(--color-fondo) 55%);
+    }
+    .tarjeta-login {
+        max-width: 400px;
+        width: 100%;
+        border: 1px solid var(--color-borde);
+    }
+
+    /* ---------- Vistas (simulación de navegación SPA) ---------- */
+    .vista {
+        display: none; /* Oculta por defecto; se activa vía JavaScript */
+    }
+    .vista.activa {
+        display: block;
+    }
+
+    /* ---------- Tabla de habitaciones ---------- */
+    .badge-disponible { background-color: #198754; }
+    .badge-ocupada    { background-color: var(--color-error); }
+    .badge-mantenimiento { background-color: #e6a700; color: #151f28; }
+
+    /* ---------- Selector de rol (simulación, no autenticación real) ---------- */
+    .selector-rol {
+        max-width: 220px;
+    }
+</style>
+</head>
+<body>
+
+<!-- ================================================================
+     VISTA 1: PANTALLA DE LOGIN
+     Sin navbar de navegación interna, ya que el usuario aún no
+     ha ingresado al sistema. Header y footer simplificados.
+================================================================= -->
+<section id="vista-login" class="vista activa">
+
+    <!-- Header simple, solo con el nombre del sistema -->
+    <header class="bg-primario text-white text-center py-3 position-absolute top-0 start-0 w-100">
+        <h1 class="h4 mb-0"><i class="bi bi-building"></i> HotelGest</h1>
+    </header>
+
+    <div class="contenedor-login px-3">
+        <div class="card tarjeta-login shadow-sm p-4 rounded-3">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <i class="bi bi-key-fill" style="font-size: 2.5rem; color: var(--color-primario);"></i>
+                    <h2 class="h4 mt-2 mb-0">Iniciar sesión</h2>
+                    <p class="texto-muted-personalizado small">Sistema de Gestión Hotelera</p>
+                </div>
+
+                <!-- Formulario de login con validación visual de Bootstrap -->
+                <form id="form-login" class="needs-validation" novalidate>
+
+                    <div class="mb-3">
+                        <label for="usuario" class="form-label">Usuario</label>
+                        <input type="text" class="form-control" id="usuario" placeholder="Ingrese su usuario" required>
+                        <div class="invalid-feedback">
+                            El usuario es obligatorio.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="contrasena" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="contrasena" placeholder="Ingrese su contraseña" required minlength="4">
+                        <div class="invalid-feedback">
+                            La contraseña debe tener al menos 4 caracteres.
+                        </div>
+                    </div>
+
+                    <!-- Selector de rol: simula distintos permisos de acceso.
+                         En el sistema real, el rol vendría determinado por el
+                         backend (Spring Security) tras autenticar al usuario. -->
+                    <div class="mb-3">
+                        <label for="rol-login" class="form-label">Rol (simulado para el prototipo)</label>
+                        <select class="form-select" id="rol-login">
+                            <option value="ADMINISTRADOR">Administrador</option>
+                            <option value="RECEPCIONISTA">Recepcionista</option>
+                            <option value="HUESPED">Huésped</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primario w-100">
+                        <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer-hotel text-center py-2 position-absolute bottom-0 start-0 w-100 small">
+        &copy; 2026 HotelGest - Proyecto Final, Marcos de Desarrollo Web
+    </footer>
+</section>
+
+
+<!-- ================================================================
+     ESTRUCTURA COMÚN PARA LAS VISTAS INTERNAS
+     (Dashboard, Listado y Formulario comparten navbar y footer)
+================================================================= -->
+<div id="contenedor-interno" class="vista d-flex flex-column min-vh-100">
+
+    <!-- ============================================================
+         NAVBAR PRINCIPAL
+         Menú de navegación entre módulos del sistema.
+         Se resalta el enlace activo según la vista actual.
+    ============================================================= -->
+    <nav class="navbar navbar-expand-lg navbar-hotel">
+        <div class="container">
+            <a class="navbar-brand text-white fw-bold" href="#">
+                <i class="bi bi-building"></i> HotelGest
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="menuPrincipal">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" id="link-dashboard" href="#" onclick="mostrarVista('dashboard')">
+                            <i class="bi bi-speedometer2"></i> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="link-listado" href="#" onclick="mostrarVista('listado')">
+                            <i class="bi bi-door-open"></i> Habitaciones
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="link-formulario" href="#" onclick="mostrarVista('formulario')">
+                            <i class="bi bi-calendar-plus"></i> Nueva reserva
+                        </a>
+                    </li>
+                    <!-- Enlaces visibles solo para ciertos roles (autorización simulada) -->
+                    <li class="nav-item elemento-solo-admin">
+                        <a class="nav-link" href="#" onclick="return false;">
+                            <i class="bi bi-people"></i> Huéspedes
+                        </a>
+                    </li>
+                    <li class="nav-item elemento-solo-admin">
+                        <a class="nav-link" href="#" onclick="return false;">
+                            <i class="bi bi-cash-coin"></i> Pagos
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Indicador de rol activo + cierre de sesión -->
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-light text-dark border">
+                        <i class="bi bi-person-badge"></i> Rol: <span id="rol-actual-texto">Administrador</span>
+                    </span>
+                    <button class="btn btn-sm btn-outline-light" onclick="cerrarSesion()">
+                        <i class="bi bi-box-arrow-right"></i> Salir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================================================
+         VISTA 2: DASHBOARD / PANTALLA PRINCIPAL
+    ============================================================= -->
+    <section id="vista-dashboard" class="vista activa flex-fill">
+        <div class="container py-4">
+
+            <div class="mb-4">
+                <h2><i class="bi bi-house-door"></i> Bienvenido a HotelGest</h2>
+                <p class="texto-muted-personalizado">
+                    Resumen general de la operación del hotel para hoy.
+                </p>
+            </div>
+
+            <!-- Tarjetas de resumen -->
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card tarjeta-resumen h-100">
+                        <div class="card-body d-flex align-items-center gap-3">
+                            <i class="bi bi-door-open icono-resumen"></i>
+                            <div>
+                                <div class="fs-4 fw-bold">18</div>
+                                <div class="small texto-muted-personalizado">Habitaciones disponibles</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card tarjeta-resumen h-100">
+                        <div class="card-body d-flex align-items-center gap-3">
+                            <i class="bi bi-calendar-check icono-resumen"></i>
+                            <div>
+                                <div class="fs-4 fw-bold">7</div>
+                                <div class="small texto-muted-personalizado">Reservas de hoy</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card tarjeta-resumen h-100">
+                        <div class="card-body d-flex align-items-center gap-3">
+                            <i class="bi bi-people icono-resumen"></i>
+                            <div>
+                                <div class="fs-4 fw-bold">12</div>
+                                <div class="small texto-muted-personalizado">Huéspedes activos</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card tarjeta-resumen h-100">
+                        <div class="card-body d-flex align-items-center gap-3">
+                            <i class="bi bi-cash-coin icono-resumen"></i>
+                            <div>
+                                <div class="fs-4 fw-bold">$1,240</div>
+                                <div class="small texto-muted-personalizado">Saldos pendientes</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bloque de bienvenida con imagen ilustrativa -->
+            <div class="card border-0 bg-acento">
+                <div class="card-body row align-items-center g-3">
+                    <div class="col-md-8">
+                        <h4><i class="bi bi-stars"></i> Gestión centralizada, sin duplicados ni planillas sueltas</h4>
+                        <p class="mb-0 texto-muted-personalizado">
+                            Este panel reemplaza el uso de cuadernos, hojas de cálculo y
+                            mensajes de WhatsApp para el control de habitaciones, huéspedes
+                            y reservas, evitando reservas duplicadas y pérdida de información.
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <i class="bi bi-building-check" style="font-size: 4rem; color: var(--color-secundario);"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         VISTA 3: LISTADO DE HABITACIONES (TABLA)
+    ============================================================= -->
+    <section id="vista-listado" class="vista flex-fill">
+        <div class="container py-4">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <h2 class="mb-0"><i class="bi bi-door-open"></i> Habitaciones</h2>
+                <button class="btn btn-primario btn-sm" onclick="mostrarVista('formulario')">
+                    <i class="bi bi-plus-circle"></i> Nueva reserva
+                </button>
+            </div>
+
+            <!-- Buscador / filtro simple sobre la tabla -->
+            <div class="input-group mb-3" style="max-width: 350px;">
+                <span class="input-group-text bg-muted"><i class="bi bi-search"></i></span>
+                <input type="text" id="buscador-habitaciones" class="form-control"
+                       placeholder="Buscar por número o tipo..." onkeyup="filtrarHabitaciones()">
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle bg-white">
+                    <thead class="table-light">
+                        <tr>
+                            <th>N.º</th>
+                            <th>Tipo</th>
+                            <th>Capacidad</th>
+                            <th>Precio / noche</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-tabla-habitaciones">
+                        <tr>
+                            <td>101</td>
+                            <td>Individual</td>
+                            <td>1 persona</td>
+                            <td>$35.00</td>
+                            <td><span class="badge badge-disponible">Disponible</span></td>
+                        </tr>
+                        <tr>
+                            <td>102</td>
+                            <td>Doble</td>
+                            <td>2 personas</td>
+                            <td>$50.00</td>
+                            <td><span class="badge badge-ocupada">Ocupada</span></td>
+                        </tr>
+                        <tr>
+                            <td>103</td>
+                            <td>Suite</td>
+                            <td>4 personas</td>
+                            <td>$90.00</td>
+                            <td><span class="badge badge-disponible">Disponible</span></td>
+                        </tr>
+                        <tr>
+                            <td>104</td>
+                            <td>Doble</td>
+                            <td>2 personas</td>
+                            <td>$50.00</td>
+                            <td><span class="badge badge-mantenimiento">Mantenimiento</span></td>
+                        </tr>
+                        <tr>
+                            <td>105</td>
+                            <td>Individual</td>
+                            <td>1 persona</td>
+                            <td>$35.00</td>
+                            <td><span class="badge badge-disponible">Disponible</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Mensaje que aparece si el filtro no encuentra resultados -->
+                <p id="mensaje-sin-resultados" class="text-center texto-muted-personalizado d-none">
+                    No se encontraron habitaciones que coincidan con la búsqueda.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         VISTA 4: FORMULARIO - NUEVA RESERVA
+    ============================================================= -->
+    <section id="vista-formulario" class="vista flex-fill">
+        <div class="container py-4">
+
+            <h2 class="mb-3"><i class="bi bi-calendar-plus"></i> Nueva reserva</h2>
+
+            <!-- Mensajes de confirmación / error, ocultos por defecto -->
+            <div id="alerta-exito" class="alert alert-success d-none" role="alert">
+                <i class="bi bi-check-circle"></i> Reserva registrada correctamente.
+            </div>
+            <div id="alerta-error" class="alert alert-danger d-none" role="alert">
+                <i class="bi bi-exclamation-triangle"></i> Revise los campos marcados: hay datos obligatorios sin completar.
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <form id="form-reserva" class="row g-3 needs-validation" novalidate>
+
+                        <div class="col-md-6">
+                            <label for="huesped" class="form-label">Huésped</label>
+                            <input type="text" class="form-control" id="huesped" placeholder="Nombre completo del huésped" required>
+                            <div class="invalid-feedback">Ingrese el nombre del huésped.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="habitacion-reserva" class="form-label">Habitación</label>
+                            <select class="form-select" id="habitacion-reserva" required>
+                                <option value="" selected disabled>Seleccione una habitación</option>
+                                <option value="101">101 - Individual</option>
+                                <option value="103">103 - Suite</option>
+                                <option value="105">105 - Individual</option>
+                            </select>
+                            <div class="invalid-feedback">Seleccione una habitación disponible.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="fecha-entrada" class="form-label">Fecha de entrada</label>
+                            <input type="date" class="form-control" id="fecha-entrada" required>
+                            <div class="invalid-feedback">Ingrese la fecha de entrada.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="fecha-salida" class="form-label">Fecha de salida</label>
+                            <input type="date" class="form-control" id="fecha-salida" required>
+                            <div class="invalid-feedback">Ingrese la fecha de salida.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="estado-pago" class="form-label">Estado del pago</label>
+                            <select class="form-select" id="estado-pago" required>
+                                <option value="" selected disabled>Seleccione un estado</option>
+                                <option value="SENA">Seña pagada</option>
+                                <option value="PAGADO">Pagado completo</option>
+                                <option value="PENDIENTE">Pendiente</option>
+                            </select>
+                            <div class="invalid-feedback">Seleccione el estado del pago.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="observaciones" class="form-label">Observaciones (opcional)</label>
+                            <input type="text" class="form-control" id="observaciones" placeholder="Preferencias, pedidos especiales, etc.">
+                        </div>
+
+                        <div class="col-12 d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primario">
+                                <i class="bi bi-save"></i> Guardar reserva
+                            </button>
+                            <button type="reset" class="btn btn-outline-secondary" onclick="ocultarAlertas()">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         FOOTER COMÚN PARA LAS VISTAS INTERNAS
+    ============================================================= -->
+    <footer class="footer-hotel text-center py-3 mt-auto">
+        <small>&copy; 2026 HotelGest - Proyecto Final, Marcos de Desarrollo Web (prototipo de front end)</small>
+    </footer>
+</div>
+
+
+<!-- ============================================================
+     LIBRERÍAS JS (Bootstrap) + LÓGICA DEL PROTOTIPO
+============================================================= -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    /* ============================================================
+       LÓGICA DE NAVEGACIÓN ENTRE VISTAS
+       Como el prototipo es un único archivo HTML, la "navegación"
+       entre pantallas se simula mostrando y ocultando secciones,
+       en vez de recargar páginas distintas.
+    ============================================================= */
+
+    // Maneja el envío del formulario de login (simulado, sin backend real)
+    document.getElementById('form-login').addEventListener('submit', function (evento) {
+        evento.preventDefault();
+
+        if (!this.checkValidity()) {
+            evento.stopPropagation();
+            this.classList.add('was-validated');
+            return;
+        }
+
+        // Guarda el rol elegido y actualiza la interfaz según el rol
+        const rolSeleccionado = document.getElementById('rol-login').value;
+        aplicarRol(rolSeleccionado);
+
+        // Oculta el login y muestra el contenedor interno (dashboard por defecto)
+        document.getElementById('vista-login').classList.remove('activa');
+        document.getElementById('contenedor-interno').classList.add('activa');
+        mostrarVista('dashboard');
+    });
+
+    // Cambia entre las vistas internas (dashboard, listado, formulario)
+    function mostrarVista(nombreVista) {
+        const vistasInternas = ['dashboard', 'listado', 'formulario'];
+
+        vistasInternas.forEach(function (vista) {
+            document.getElementById('vista-' + vista).classList.remove('activa');
+            document.getElementById('link-' + vista)?.classList.remove('active');
+        });
+
+        document.getElementById('vista-' + nombreVista).classList.add('activa');
+        document.getElementById('link-' + nombreVista)?.classList.add('active');
+    }
+
+    // Cierra sesión: vuelve a mostrar el login y reinicia el formulario
+    function cerrarSesion() {
+        document.getElementById('contenedor-interno').classList.remove('activa');
+        document.getElementById('vista-login').classList.add('activa');
+        document.getElementById('form-login').reset();
+        document.getElementById('form-login').classList.remove('was-validated');
+    }
+
+    /* ============================================================
+       AUTORIZACIÓN SIMULADA SEGÚN ROL
+       Los elementos con la clase "elemento-solo-admin" solo se
+       muestran si el rol activo es ADMINISTRADOR. En el sistema
+       real, este control lo haría Spring Security en el backend;
+       aquí solo se simula a nivel visual para el prototipo.
+    ============================================================= */
+    function aplicarRol(rol) {
+        const nombresRol = {
+            ADMINISTRADOR: 'Administrador',
+            RECEPCIONISTA: 'Recepcionista',
+            HUESPED: 'Huésped'
+        };
+        document.getElementById('rol-actual-texto').textContent = nombresRol[rol];
+
+        const elementosSoloAdmin = document.querySelectorAll('.elemento-solo-admin');
+        elementosSoloAdmin.forEach(function (elemento) {
+            elemento.style.display = (rol === 'ADMINISTRADOR') ? '' : 'none';
+        });
+    }
+
+    /* ============================================================
+       FILTRO / BUSCADOR SIMPLE SOBRE LA TABLA DE HABITACIONES
+    ============================================================= */
+    function filtrarHabitaciones() {
+        const texto = document.getElementById('buscador-habitaciones').value.toLowerCase();
+        const filas = document.querySelectorAll('#cuerpo-tabla-habitaciones tr');
+        let hayResultados = false;
+
+        filas.forEach(function (fila) {
+            const contenido = fila.textContent.toLowerCase();
+            const coincide = contenido.includes(texto);
+            fila.style.display = coincide ? '' : 'none';
+            if (coincide) hayResultados = true;
+        });
+
+        document.getElementById('mensaje-sin-resultados').classList.toggle('d-none', hayResultados);
+    }
+
+    /* ============================================================
+       VALIDACIÓN Y ENVÍO SIMULADO DEL FORMULARIO DE RESERVA
+    ============================================================= */
+    document.getElementById('form-reserva').addEventListener('submit', function (evento) {
+        evento.preventDefault();
+        ocultarAlertas();
+
+        if (!this.checkValidity()) {
+            evento.stopPropagation();
+            this.classList.add('was-validated');
+            document.getElementById('alerta-error').classList.remove('d-none');
+            return;
+        }
+
+        // Simulación de guardado exitoso (sin conexión real a backend/BD)
+        document.getElementById('alerta-exito').classList.remove('d-none');
+        this.classList.remove('was-validated');
+        this.reset();
+    });
+
+    function ocultarAlertas() {
+        document.getElementById('alerta-exito').classList.add('d-none');
+        document.getElementById('alerta-error').classList.add('d-none');
+    }
+</script>
+</body>
+</html>
+
