@@ -1,13 +1,6 @@
-# HotelGest - Sistema de Gestión Hotelera (Prototipo)
+# HotelGest - Sistema de Gestión Hotelera
 
-Sistema de gestión hotelera desarrollado como proyecto final para la materia
-**Marcos de Desarrollo Web**. Es un **prototipo de front end** que simula la
-interfaz de un hotel: inicio de sesión con roles, dashboard con métricas,
-listado de habitaciones, gestión de huéspedes, resumen de pagos y un
-formulario de nueva reserva.
-
-> **Prototipo de front end** · Sin backend · Sin base de datos ·
-> Todos los datos son simulados/estáticos.
+Sistema de gestión hotelera desarrollado como proyecto para el curso **Marcos de Desarrollo Web**. Es un prototipo de front-end: no tiene backend ni base de datos, y todos los datos que muestra están simulados directamente en el código.
 
 ---
 
@@ -20,45 +13,52 @@ formulario de nueva reserva.
 | **JavaScript (módulos ES)** | Lógica de la aplicación, separada en módulos en `js/` |
 | **Bootstrap 5.3.3** | Framework de front end (grid, componentes, utilidades) vía CDN |
 | **Bootstrap Icons 1.11.3** | Iconografía para navbar, tarjetas y botones vía CDN |
+| **pnpm** | Gestor de paquetes del proyecto (versión fijada en `packageManager`) |
+| **serve** | Servidor estático usado para desarrollo local (devDependency) |
 
 ---
 
 ## Estructura del proyecto
 
 ```
-prototype_bootstrap/
-├── index.html                 # Esqueleto principal (punto de entrada)
-├── css/                       # Hojas de estilo propias, modularizadas
-│   ├── main.css               # Archivo maestro que importa el resto
-│   ├── variables.css          # Paleta de colores (variables CSS)
-│   ├── base.css               # Estilos globales
-│   ├── utilities.css          # Clases utilitarias reutilizables
-│   ├── components.css         # Componentes (badges, selectores)
-│   ├── layout.css             # Estructura general (navbar, footer, vistas)
-│   └── views/                 # Estilos específicos por vista
-│       └── dashboard.css      # Estilos del dashboard
-├── js/                        # Lógica de la aplicación en módulos ES
-│   ├── main.js                # Punto de entrada del JS
-│   ├── views-loader.js        # Carga los HTML parciales
-│   ├── router.js              # Navegación entre vistas
-│   ├── auth.js                # Login, cierre de sesión y roles
-│   ├── filters.js             # Buscadores de las tablas
-│   ├── forms.js               # Validación y envío del formulario
-│   ├── render.js              # Puebla las tablas desde los datos
-│   └── data/                  # Datos simulados (reemplazables por API)
-│       ├── habitaciones.js    # Catálogo de habitaciones
-│       ├── pagos.js           # Resumen de pagos
-│       └── huespedes.js       # Lista de huéspedes (2 registrados)
-└── views/                     # HTML parciales (una por vista)
-    ├── login.html             # Pantalla de inicio de sesión
-    └── contenido-interno.html # Vistas autenticadas (navbar + módulos)
+.
+├── README.md
+├── css/                        # Hojas de estilo propias, modularizadas
+│   ├── base.css                # Estilos globales
+│   ├── components.css          # Componentes (badges, selectores)
+│   ├── layout.css              # Estructura general (navbar, footer, vistas)
+│   ├── main.css                # Archivo maestro que importa el resto
+│   ├── utilities.css           # Clases utilitarias reutilizables
+│   ├── variables.css           # Paleta de colores (variables CSS)
+│   └── views/
+│       └── dashboard.css       # Estilos del dashboard
+├── index.html                  # Esqueleto principal (punto de entrada)
+├── js/                         # Lógica de la aplicación en módulos ES
+│   ├── auth.js                 # Login, cierre de sesión y roles
+│   ├── data/                   # Datos simulados (reemplazables por API)
+│   │   ├── habitaciones.js     # Catálogo de habitaciones
+│   │   ├── huespedes.js        # Lista de huéspedes (2 registrados)
+│   │   └── pagos.js            # Resumen de pagos
+│   ├── filters.js               # Buscadores de las tablas
+│   ├── forms.js                  # Validación y envío del formulario
+│   ├── main.js                    # Punto de entrada del JS
+│   ├── render.js                   # Puebla las tablas desde los datos
+│   ├── router.js                    # Navegación entre vistas
+│   └── views-loader.js               # Carga los HTML parciales
+├── node_modules/                       # Generado por `pnpm install`, no versionado
+├── package.json                        # Manifiesto del proyecto y script de arranque (`dev`)
+├── pnpm-lock.yaml                       # Lockfile de pnpm
+└── views/                                # HTML parciales (una por vista)
+    ├── contenido-interno.html            # Vistas autenticadas (navbar + módulos)
+    └── login.html                        # Pantalla de inicio de sesión
 ```
 
 ---
 
 ## Requisitos previos
 
-- **Node.js** (v14 o superior) para levantar el servidor local.
+- **Node.js** (versión compatible con pnpm 11.x; se recomienda una LTS reciente).
+- **pnpm**, habilitado vía `corepack enable` o instalado globalmente con `npm install -g pnpm`. La versión exacta (`11.25.0`) queda fijada en el campo `packageManager` de `package.json`.
 - Conexión a internet (los estilos e iconos de Bootstrap se cargan desde un CDN).
 
 ---
@@ -70,41 +70,34 @@ prototype_bootstrap/
 > clic** (el navegador bloquea ese acceso por la política CORS sobre `file://`).
 > Debes servirlo con un servidor local.
 
-### Opción 1: `npx http-server` (recomendada, sin instalar nada)
+El proyecto usa [`serve`](https://github.com/vercel/serve) como servidor estático de desarrollo, instalado como `devDependency` y fijado en `pnpm-lock.yaml`. No requiere ningún paso de build ni reestructuración de carpetas: sirve el proyecto tal cual está.
 
-Desde la raíz del proyecto:
-
-```bash
-npx http-server . -p 8080
-```
-
-Luego abre en el navegador: <http://localhost:8080>
-
-### Opción 2: `npx serve`
+1. Instala las dependencias:
 
 ```bash
-npx serve -l 8080
+pnpm install
 ```
 
-Cualquiera de las dos descarga la herramienta de forma temporal y levanta un
-servidor estático de una sola vez.
+2. Levanta el servidor de desarrollo:
+
+```bash
+pnpm dev
+```
+
+3. Abre en el navegador: <http://localhost:8080>
+
+**Nota:** `serve` no incluye recarga automática (no hay watch/HMR). Después de cada cambio en el código hay que refrescar el navegador manualmente.
 
 ---
 
 ## Cómo usar el prototipo
 
-1. **Iniciar sesión**: escribe cualquier usuario y contraseña (solo deben tener
-   al menos 4 caracteres en la contraseña) y elige un **rol**.
-2. **Roles simulados**:
-   - **Administrador**: acceso completo (incluye Huéspedes y Pagos).
-   - **Recepcionista** y **Huésped**: sin acceso a Huéspedes ni Pagos.
-3. **Navegación**: usa el menú superior para moverse entre el dashboard,
-   habitaciones, nueva reserva, huéspedes (con datos de ejemplo y filtro en
-   tiempo real) y pagos.
-4. **Filtros**: escribe en los buscadores para filtrar las tablas en tiempo real.
-5. **Nueva reserva**: completa el formulario; se muestra un mensaje de éxito
-   simulado al guardar.
-6. **Cerrar sesión**: botón **Salir** en la esquina superior derecha.
+1. **Iniciar sesión**: escribe cualquier usuario y contraseña (la contraseña debe tener al menos 4 caracteres) y elige un rol.
+2. **Roles simulados**: el administrador tiene acceso completo, incluidas las secciones de Huéspedes y Pagos; recepcionista y huésped no tienen acceso a esas dos secciones.
+3. **Navegación**: el menú superior permite moverse entre el dashboard, habitaciones, nueva reserva, huéspedes (con datos de ejemplo y filtro en tiempo real) y pagos.
+4. **Filtros**: escribir en los buscadores filtra las tablas en tiempo real.
+5. **Nueva reserva**: al completar y guardar el formulario se muestra un mensaje de éxito simulado.
+6. **Cerrar sesión**: mediante el botón **Salir**, en la esquina superior derecha.
 
 ---
 
@@ -117,19 +110,15 @@ servidor estático de una sola vez.
 | Estado | Modularizado y listo para integrar backend |
 | Frontend | HTML5 + CSS3 + JavaScript (ES Modules) |
 | Framework UI | Bootstrap 5.3.3 (CDN) |
+| Gestor de paquetes | pnpm 11.25.0 |
+| Servidor de desarrollo | serve (devDependency, `pnpm dev`) |
 | Huéspedes | 2 registrados (Juan Pérez, María García) |
 
 ---
 
 ## Notas sobre la arquitectura
 
-- **Carga de vistas**: `js/views-loader.js` inserta los parciales de `views/`
-  dentro de los contenedores vacíos del `index.html` mediante `fetch()` e
-  `innerHTML`.
-- **Datos**: las tablas de habitaciones, huéspedes y pagos se generan
-  dinámicamente desde `js/data/`. Para conectar un backend real, solo habría que
-  reemplazar el contenido de estos archivos (o hacer llamadas a la API en
-  `render.js`).
-- **Roles**: la autorización es solo visual (clase `elemento-solo-admin`).
-  En la versión definitiva, este control lo haría el backend (p. ej. Spring
-  Security).
+La carga de vistas ocurre en `js/views-loader.js`, que inserta los parciales de `views/` dentro de los contenedores vacíos de `index.html` mediante `fetch()` e `innerHTML`. Los datos que alimentan las tablas de habitaciones, huéspedes y pagos se generan dinámicamente desde `js/data/`; para conectar un backend real bastaría con reemplazar el contenido de esos archivos, o mover las llamadas a la API dentro de `render.js`.
+
+La autorización por rol, por su parte, es puramente visual: se implementa con la clase `elemento-solo-admin`, que oculta u muestra elementos según el rol elegido en el login, sin ningún control real detrás. En una versión definitiva, ese control debería resolverlo el backend (por ejemplo, con Spring Security).
+

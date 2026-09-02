@@ -1,0 +1,23 @@
+# ===== Archivo .gitignore =====
+
+# Dependencias (instaladas por pnpm, no se versionan)
+node_modules
+
+# Salida de build (por si en el futuro se agrega Vite u otro bundler)
+dist
+
+# Logs de pnpm/npm
+pnpm-debug.log*
+npm-debug.log*
+
+# Archivos de entorno (si en algún momento se agregan variables sensibles)
+.env
+.env.local
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de editor/IDE
+.vscode/
+.idea/
