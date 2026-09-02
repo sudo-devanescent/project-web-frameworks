@@ -48,7 +48,7 @@ prototype_bootstrap/
 │   └── data/                  # Datos simulados (reemplazables por API)
 │       ├── habitaciones.js    # Catálogo de habitaciones
 │       ├── pagos.js           # Resumen de pagos
-│       └── huespedes.js       # Lista de huéspedes
+│       └── huespedes.js       # Lista de huéspedes (2 registrados)
 └── views/                     # HTML parciales (una por vista)
     ├── login.html             # Pantalla de inicio de sesión
     └── contenido-interno.html # Vistas autenticadas (navbar + módulos)
@@ -99,7 +99,8 @@ servidor estático de una sola vez.
    - **Administrador**: acceso completo (incluye Huéspedes y Pagos).
    - **Recepcionista** y **Huésped**: sin acceso a Huéspedes ni Pagos.
 3. **Navegación**: usa el menú superior para moverse entre el dashboard,
-   habitaciones, nueva reserva, huéspedes y pagos.
+   habitaciones, nueva reserva, huéspedes (con datos de ejemplo y filtro en
+   tiempo real) y pagos.
 4. **Filtros**: escribe en los buscadores para filtrar las tablas en tiempo real.
 5. **Nueva reserva**: completa el formulario; se muestra un mensaje de éxito
    simulado al guardar.
@@ -116,6 +117,7 @@ servidor estático de una sola vez.
 | Estado | Modularizado y listo para integrar backend |
 | Frontend | HTML5 + CSS3 + JavaScript (ES Modules) |
 | Framework UI | Bootstrap 5.3.3 (CDN) |
+| Huéspedes | 2 registrados (Juan Pérez, María García) |
 
 ---
 
@@ -124,9 +126,10 @@ servidor estático de una sola vez.
 - **Carga de vistas**: `js/views-loader.js` inserta los parciales de `views/`
   dentro de los contenedores vacíos del `index.html` mediante `fetch()` e
   `innerHTML`.
-- **Datos**: las tablas de habitaciones y pagos se generan dinámicamente desde
-  `js/data/`. Para conectar un backend real, solo habría que reemplazar el
-  contenido de estos archivos (o hacer llamadas a la API en `render.js`).
+- **Datos**: las tablas de habitaciones, huéspedes y pagos se generan
+  dinámicamente desde `js/data/`. Para conectar un backend real, solo habría que
+  reemplazar el contenido de estos archivos (o hacer llamadas a la API en
+  `render.js`).
 - **Roles**: la autorización es solo visual (clase `elemento-solo-admin`).
   En la versión definitiva, este control lo haría el backend (p. ej. Spring
   Security).

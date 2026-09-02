@@ -18,3 +18,11 @@
 .selector-rol {
     max-width: 220px;
 }
+
+/* ---------- Tablas: encabezados sin salto de línea ---------- */
+/* Evita que los textos de los encabezados (ej. "Precio (por día)",
+   "Fecha de entrada") se rompan en varias líneas en pantallas
+   estrechas, manteniendo una apariencia horizontal y profesional. */
+th {
+    white-space: nowrap;
+}
