@@ -117,6 +117,9 @@
     .badge-disponible { background-color: #198754; }
     .badge-ocupada    { background-color: var(--color-error); }
     .badge-mantenimiento { background-color: #e6a700; color: #151f28; }
+    /* Badges para módulo de Pagos */
+    .badge-pago-pendiente { background-color: var(--color-error); color: #ffffff; }
+    .badge-pago-pagado    { background-color: #198754; color: #ffffff; }
 
     /* ---------- Selector de rol (simulación, no autenticación real) ---------- */
     .selector-rol {
@@ -196,7 +199,7 @@
      ESTRUCTURA COMÚN PARA LAS VISTAS INTERNAS
      (Dashboard, Listado y Formulario comparten navbar y footer)
 ================================================================= -->
-<div id="contenedor-interno" class="vista d-flex flex-column min-vh-100">
+<div id="contenedor-interno" class="vista d-flex flex-column min-vh-100 d-none">
 
     <!-- ============================================================
          NAVBAR PRINCIPAL
@@ -230,12 +233,12 @@
                     </li>
                     <!-- Enlaces visibles solo para ciertos roles (autorización simulada) -->
                     <li class="nav-item elemento-solo-admin">
-                        <a class="nav-link" href="#" onclick="return false;">
+                        <a class="nav-link" id="link-huespedes" href="#">
                             <i class="bi bi-people"></i> Huéspedes
                         </a>
                     </li>
                     <li class="nav-item elemento-solo-admin">
-                        <a class="nav-link" href="#" onclick="return false;">
+                        <a class="nav-link" id="link-pagos" href="#">
                             <i class="bi bi-cash-coin"></i> Pagos
                         </a>
                     </li>
@@ -411,8 +414,153 @@
         </div>
     </section>
 
+<!-- ============================================================
+          VISTA 5: LISTADO DE HUÉSPEDES
+    ============================================================= -->
+    <section id="vista-listado-huespedes" class="vista flex-fill">
+        <div class="container py-4">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <h2 class="mb-0"><i class="bi bi-people"></i> Huéspedes</h2>
+                <button class="btn btn-primario btn-sm" onclick="mostrarVista('dashboard')">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </button>
+            </div>
+
+            <!-- Buscador de huéspedes -->
+            <div class="input-group mb-3" style="max-width: 350px;">
+                <span class="input-group-text bg-muted"><i class="bi bi-search"></i></span>
+                <input type="text" id="buscador-huespedes" class="form-control"
+                       placeholder="Buscar por nombre o documento..." onkeyup="filtrarHuespedes()">
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle bg-white">
+                    <thead class="table-light">
+                        <tr>
+                            <th>N.º</th>
+                            <th>Nombre</th>
+                            <th>Documento</th>
+                            <th>Fecha de entrada</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-tabla-huespedes">
+                        <!-- Filas de huéspedes se poblarán dinámicamente o desde backend -->
+                    </tbody>
+                    <!-- Mensaje que aparece si el filtro no encuentra resultados -->
+                    <p id="mensaje-sin-resultados-huespedes" class="text-center texto-muted-personalizado d-none">
+                        No se encontraron huéspedes que coincidan con la búsqueda.
+                    </p>
+                </table>
+            </div>
+        </div>
+    </section>
+
     <!-- ============================================================
-         VISTA 4: FORMULARIO - NUEVA RESERVA
+          VISTA 6: RESUMEN DE PAGOS
+    ============================================================= -->
+    <section id="vista-pagos" class="vista flex-fill">
+        <div class="container py-4">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <h2 class="mb-0"><i class="bi bi-cash-coin"></i> Pagos</h2>
+                <button class="btn btn-primario btn-sm" onclick="mostrarVista('dashboard')">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </button>
+            </div>
+
+            <!-- Resumen general de pagos -->
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card tarjeta-resumen h-100">
+                        <div class="card-body d-flex align-items-center gap-3">
+                            <i class="bi bi-receipt icono-resumen"></i>
+                            <div>
+                                <div class="fs-4 fw-bold">$890</div>
+                                <div class="small texto-muted-personalizado">Total recaudado</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card tarjeta-resumen h-100">
+                        <div class="card-body d-flex align-items-center gap-3">
+                            <i class="bi bi-credit-card icono-resumen"></i>
+                            <div>
+                                <div class="fs-4 fw-bold">$320</div>
+                                <div class="small texto-muted-personalizado">Pendientes</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card tarjeta-resumen h-100">
+                        <div class="card-body d-flex align-items-center gap-3">
+                            <i class="bi bi-check2-all icono-resumen" style="color: #198754;"></i>
+                            <div>
+                                <div class="fs-4 fw-bold">$570</div>
+                                <div class="small texto-muted-personalizado">Pagados</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card tarjeta-resumen h-100">
+                        <div class="card-body d-flex align-items-center gap-3">
+                            <i class="bi bi-hourglass-split icono-resumen" style="color: #e6a700;"></i>
+                            <div>
+                                <div class="fs-4 fw-bold">$∞</div>
+                                <div class="small texto-muted-personalizado">Por cobrar</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de reservas por estado de pago -->
+            <div class="card tarjeta-resumen">
+                <div class="card-header">
+                    <h4 class="mb-0">Reservas por Estado de Pago</h4>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Reserva</th>
+                                    <th>Huésped</th>
+                                    <th>Monto</th>
+                                    <th>Estado</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpo-tabla-pagos">
+                                <tr>
+                                    <td>101</td>
+                                    <td>Juan Pérez</td>
+                                    <td>$120</td>
+                                    <td><span class="badge badge-pago-pendiente">Pendiente</span></td>
+                                    <td>2026-01-15</td>
+                                </tr>
+                                <tr>
+                                    <td>103</td>
+                                    <td>María García</td>
+                                    <td>$90</td>
+                                    <td><span class="badge badge-pago-pagado">Pagado</span></td>
+                                    <td>2026-01-10</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+          VISTA 4: FORMULARIO - NUEVA RESERVA
     ============================================================= -->
     <section id="vista-formulario" class="vista flex-fill">
         <div class="container py-4">
@@ -528,12 +676,13 @@
         // Oculta el login y muestra el contenedor interno (dashboard por defecto)
         document.getElementById('vista-login').classList.remove('activa');
         document.getElementById('contenedor-interno').classList.add('activa');
+        document.getElementById('contenedor-interno').classList.remove('d-none');
         mostrarVista('dashboard');
     });
 
     // Cambia entre las vistas internas (dashboard, listado, formulario)
     function mostrarVista(nombreVista) {
-        const vistasInternas = ['dashboard', 'listado', 'formulario'];
+        const vistasInternas = ['dashboard', 'listado', 'formulario', 'listado-huespedes', 'pagos'];
 
         vistasInternas.forEach(function (vista) {
             document.getElementById('vista-' + vista).classList.remove('activa');
@@ -543,6 +692,17 @@
         document.getElementById('vista-' + nombreVista).classList.add('activa');
         document.getElementById('link-' + nombreVista)?.classList.add('active');
     }
+
+// Event listeners para enlaces del navbar (huéspedes y pagos)
+    document.getElementById('link-huespedes')?.addEventListener('click', function (e) {
+        e.preventDefault();
+        mostrarVista('listado-huespedes');
+    });
+
+    document.getElementById('link-pagos')?.addEventListener('click', function (e) {
+        e.preventDefault();
+        mostrarVista('pagos');
+    });
 
     // Cierra sesión: vuelve a mostrar el login y reinicia el formulario
     function cerrarSesion() {
@@ -589,6 +749,24 @@
         });
 
         document.getElementById('mensaje-sin-resultados').classList.toggle('d-none', hayResultados);
+    }
+
+    /* ============================================================
+       FILTRO / BUSCADOR SIMPLE SOBRE LA TABLA DE HUÉSPEDES
+   ============================================================= */
+    function filtrarHuespedes() {
+        const texto = document.getElementById('buscador-huespedes').value.toLowerCase();
+        const filas = document.querySelectorAll('#cuerpo-tabla-huespedes tr');
+        let hayResultados = false;
+
+        filas.forEach(function (fila) {
+            const contenido = fila.textContent.toLowerCase();
+            const coincide = contenido.includes(texto);
+            fila.style.display = coincide ? '' : 'none';
+            if (coincide) hayResultados = true;
+        });
+
+        document.getElementById('mensaje-sin-resultados-huespedes').classList.toggle('d-none', hayResultados);
     }
 
     /* ============================================================
