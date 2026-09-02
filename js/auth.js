@@ -33,7 +33,6 @@ export function initAuth() {
         // (dashboard por defecto)
         document.getElementById('vista-login').classList.remove('activa');
         document.getElementById('contenedor-interno').classList.add('activa');
-        document.getElementById('contenedor-interno').classList.remove('d-none');
 
         // Muestra el dashboard como pantalla de bienvenida
         mostrarVista('dashboard');

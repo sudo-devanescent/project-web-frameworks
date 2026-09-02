@@ -8,6 +8,7 @@
 
 // Importa los datos hardcodeados para poder pintarlos
 import { habitaciones } from './data/habitaciones.js';
+import { huespedes } from './data/huespedes.js';
 import { pagos } from './data/pagos.js';
 
 /**
@@ -15,6 +16,7 @@ import { pagos } from './data/pagos.js';
  */
 export function initRender() {
     renderTablaHabitaciones();
+    renderTablaHuespedes();
     renderTablaPagos();
 }
 
@@ -40,6 +42,37 @@ function renderTablaHabitaciones() {
                 <td>${hab.capacidad}</td>
                 <td>${hab.precio}</td>
                 <td><span class="badge ${claseBadge}">${hab.estado}</span></td>
+            </tr>
+        `;
+    });
+
+    // Inserta todas las filas generadas en el cuerpo de la tabla
+    cuerpo.innerHTML = filasHTML.join('');
+}
+
+/**
+ * Rellena la tabla de huéspedes a partir de los datos.
+ * Cada fila muestra el número, nombre, documento, fecha de entrada
+ * y el estado del huésped.
+ */
+function renderTablaHuespedes() {
+    const cuerpo = document.getElementById('cuerpo-tabla-huespedes');
+
+    // Convierte cada huésped de la lista en una fila HTML
+    const filasHTML = huespedes.map(function (huesped) {
+        // Determina la clase del badge según el estado del huésped
+        const claseBadge = (huesped.estado === 'Activo')
+            ? 'badge-disponible'
+            : 'badge-pago-pendiente';
+
+        return `
+            <tr>
+                <td>${huesped.numero}</td>
+                <td>${huesped.nombre}</td>
+                <td>${huesped.documento}</td>
+                <td>${huesped.fechaEntrada}</td>
+                <td><span class="badge ${claseBadge}">${huesped.estado}</span></td>
+                <td>-</td>
             </tr>
         `;
     });

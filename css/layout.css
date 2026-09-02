@@ -58,3 +58,12 @@
 .vista.activa {
     display: block;
 }
+
+/* Contenedor interno de las vistas autenticadas: en columnas de
+   altura completa para que el navbar quede arriba y el footer se
+   ancle abajo (mt-auto). Al no tener .activa vuelve a ocultarse. */
+#contenedor-interno.activa {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
