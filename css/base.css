@@ -1,0 +1,11 @@
+/* ============================================================
+   ESTILOS BASE
+   Define el fondo general, el color de texto y la fuente
+   tipográfica de todo el sitio.
+   ============================================================= */
+
+body {
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}

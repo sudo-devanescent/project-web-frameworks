@@ -1,0 +1,17 @@
+/* ============================================================
+   VARIABLES DE COLOR (paleta oficial del proyecto)
+   Se definen como variables CSS para reutilizarlas en todo
+   el documento sin repetir códigos hexadecimales.
+   ============================================================= */
+
+:root {
+    --color-primario: #407cb1;      /* Azul principal: navbar, botones primarios */
+    --color-secundario: #265b92;    /* Azul oscuro: hover, footer, énfasis */
+    --color-acento: #becddd;        /* Azul claro: fondos suaves, tarjetas destacadas */
+    --color-fondo: #fcfcfd;         /* Fondo general de la página */
+    --color-texto: #151f28;         /* Texto principal, alto contraste */
+    --color-muted: #f2f5f7;         /* Fondo de secciones secundarias */
+    --color-texto-muted: #627284;   /* Texto secundario / descripciones */
+    --color-borde: #e0e6eb;         /* Bordes de tarjetas, inputs, tablas */
+    --color-error: #ef4444;         /* Estados de error / cancelación */
+}

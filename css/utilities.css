@@ -1,0 +1,28 @@
+/* ============================================================
+   CLASES UTILITARIAS REUTILIZABLES
+   Proporcionan colores de fondo y botones personalizados
+   basados en los colores oficiales del proyecto.
+   ============================================================= */
+
+/* ---------- Fondos reutilizables ---------- */
+.bg-primario   { background-color: var(--color-primario) !important; }
+.bg-secundario { background-color: var(--color-secundario) !important; }
+.bg-acento     { background-color: var(--color-acento) !important; }
+.bg-muted      { background-color: var(--color-muted) !important; }
+
+/* Texto secundario con el color muted definido en variables */
+.texto-muted-personalizado { color: var(--color-texto-muted) !important; }
+
+/* ---------- Botón primario personalizado ---------- */
+.btn-primario {
+    background-color: var(--color-primario);
+    border-color: var(--color-primario);
+    color: #ffffff;
+}
+
+/* Al pasar el mouse, el botón se oscurece (estado hover) */
+.btn-primario:hover {
+    background-color: var(--color-secundario);
+    border-color: var(--color-secundario);
+    color: #ffffff;
+}

@@ -1,0 +1,20 @@
+/* ============================================================
+   COMPONENTES REUTILIZABLES
+   Insignias de estado (badges) y pequeño selector de rol.
+   Cada badge usa un color distinto para identificar el estado
+   de habitaciones y pagos de forma visual.
+   ============================================================= */
+
+/* ---------- Badges de estado de habitación ---------- */
+.badge-disponible { background-color: #198754; }                 /* Verde: disponible */
+.badge-ocupada    { background-color: var(--color-error); }      /* Rojo: ocupada */
+.badge-mantenimiento { background-color: #e6a700; color: #151f28; } /* Ámbar: en mantenimiento */
+
+/* ---------- Badges de estado de pago ---------- */
+.badge-pago-pendiente { background-color: var(--color-error); color: #ffffff; } /* Rojo: pendiente */
+.badge-pago-pagado    { background-color: #198754; color: #ffffff; }            /* Verde: pagado */
+
+/* ---------- Selector de rol (simulación de autenticación) ---------- */
+.selector-rol {
+    max-width: 220px;
+}

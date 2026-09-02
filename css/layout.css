@@ -1,0 +1,60 @@
+/* ============================================================
+   LAYOUT GENERAL
+   Estilos estructurales compartidos: navbar, footer, pantalla
+   de login y el mecanismo de navegación entre vistas (SPA).
+   ============================================================= */
+
+/* ---------- Navbar principal ---------- */
+.navbar-hotel {
+    background-color: var(--color-primario);
+}
+
+/* Enlaces de la navbar en blanco casi opaco */
+.navbar-hotel .nav-link {
+    color: #ffffff !important;
+    opacity: 0.9;
+}
+
+/* El enlace activo o en hover se muestra totalmente opaco,
+   en negrita y con un subrayado blanco inferior */
+.navbar-hotel .nav-link.active,
+.navbar-hotel .nav-link:hover {
+    opacity: 1;
+    font-weight: 600;
+    border-bottom: 2px solid #ffffff;
+}
+
+/* ---------- Footer ---------- */
+.footer-hotel {
+    background-color: var(--color-secundario);
+    color: #ffffff;
+}
+
+/* ---------- Pantalla de login ---------- */
+/* Contenedor que centra la tarjeta vertical y horizontalmente,
+   con un degradado suave de fondo */
+.contenedor-login {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, var(--color-acento) 0%, var(--color-fondo) 55%);
+}
+
+/* Tarjeta centrada del login, con ancho máximo fijo */
+.tarjeta-login {
+    max-width: 400px;
+    width: 100%;
+    border: 1px solid var(--color-borde);
+}
+
+/* ---------- Vistas (simulación de navegación SPA) ---------- */
+/* Todas las vistas están ocultas por defecto; la clase "activa"
+   (agregada por JavaScript) las muestra */
+.vista {
+    display: none;
+}
+
+.vista.activa {
+    display: block;
+}

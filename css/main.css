@@ -1,0 +1,25 @@
+/* ============================================================
+   ARCHIVO MAESTRO DE ESTILOS
+   Punto único de entrada de todo el CSS del proyecto.
+   Importa los demás archivos en un orden lógico para que
+   la cascada funcione correctamente: primero las variables y
+   estilos base, luego componentes, layout y estilos de vistas.
+   ============================================================= */
+
+/* 1. Variables de color disponibles para todos los demás estilos */
+@import url('variables.css');
+
+/* 2. Estilos base del documento */
+@import url('base.css');
+
+/* 3. Clases utilitarias reutilizables */
+@import url('utilities.css');
+
+/* 4. Componentes (badges, etc.) */
+@import url('components.css');
+
+/* 5. Estructura general (navbar, footer, login, navegación) */
+@import url('layout.css');
+
+/* 6. Estilos específicos por vista */
+@import url('views/dashboard.css');
