@@ -408,9 +408,35 @@
     </div>
 </section>
 
-<!-- ============================================================
-     FOOTER COMÚN PARA LAS VISTAS INTERNAS
-============================================================= -->
+
 <footer class="footer-hotel text-center py-3 mt-auto">
-    <small>&copy; 2026 HotelGest - Proyecto de Desarrollo web</small>
+    <small>
+        &copy; 2026 HotelGest - Proyecto de Desarrollo web ·
+        <a href="#" class="text-white text-decoration-underline" data-bs-toggle="modal" data-bs-target="#modalAcercaDe">
+            <i class="bi bi-info-circle"></i> Acerca de
+        </a>
+    </small>
 </footer>
+
+<div class="modal fade" id="modalAcercaDe" tabindex="-1" aria-labelledby="modalAcercaDeLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <img src="img/logo-horizontal-v2.svg" alt="Logo HotelGest" style="max-width: 220px;">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-body">
+    <p class="texto-muted-personalizado">
+        HotelGest es un sistema de gestión hotelera pensado para centralizar el
+        control de habitaciones, huéspedes, reservas y pagos, reemplazando el uso
+        de planillas sueltas y mensajes de WhatsApp en la operación diaria de un hostal.
+    </p>
+
+    <h6 class="fw-bold mt-4 mb-2"><i class="bi bi-info-circle"></i> Sobre este prototipo</h6>
+    <p class="texto-muted-personalizado small mb-4">
+        Esta versión es un prototipo de front end desarrollado para el curso
+        <strong>Marcos de Desarrollo Web</strong>. No cuenta con backend ni base
+        de datos real: los datos que se muestran están simulados en el código.
+    </p>
+</div>
