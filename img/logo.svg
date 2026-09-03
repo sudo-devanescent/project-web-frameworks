@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Logo de HotelGest</title>
+  <desc id="desc">Edificio estilizado dentro de un escudo</desc>
+  <path fill="#ffffff" d="M32 4 8 13v17c0 14.5 9.8 24.7 24 30 14.2-5.3 24-15.5 24-30V13L32 4Z"/>
+  <path fill="#265b92" d="M32 10 14 16.8v13.1c0 10.7 6.8 18.7 18 23.4 11.2-4.7 18-12.7 18-23.4V16.8L32 10Z"/>
+  <path fill="#ffffff" d="M22 22h20v22H22zM18 44h28v4H18z"/>
+  <path fill="#265b92" d="M26 26h4v5h-4zm8 0h4v5h-4zm-8 9h4v5h-4zm8 0h4v5h-4z"/>
+</svg>
