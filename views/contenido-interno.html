@@ -1,18 +1,4 @@
-<!-- ================================================================
-     CONTENIDO INTERNO (vistas autenticadas)
-     Este parcial contiene la estructura común para todas las
-     vistas internas (Dashboard, Habitaciones, Huéspedes, Pagos y
-     Formulario): el navbar principal con el menú de navegación,
-     todas las secciones internas y el footer común.
-     Se inserta en <div id="contenedor-interno"> del index.html
-     mediante el cargador de vistas.
-================================================================= -->
 
-<!-- ============================================================
-     NAVBAR PRINCIPAL
-     Menú de navegación entre módulos del sistema.
-     Se resalta el enlace activo según la vista actual.
-============================================================= -->
 <nav class="navbar navbar-expand-lg navbar-hotel">
     <div class="container">
         <a class="navbar-brand text-white fw-bold d-flex align-items-center gap-2" href="#">
@@ -20,35 +6,35 @@
         HotelGest
         </a>   
 
-        <!-- Botón que despliega el menú en pantallas pequeñas -->
+        
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="menuPrincipal">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <!-- Enlace al dashboard (pantalla principal) -->
+                
                 <li class="nav-item">
                     <a class="nav-link" id="link-dashboard" href="#" onclick="mostrarVista('dashboard')">
                         <i class="bi bi-speedometer2"></i> Inicio
                     </a>
                 </li>
 
-                <!-- Enlace al listado de habitaciones -->
+                
                 <li class="nav-item">
                     <a class="nav-link" id="link-listado" href="#" onclick="mostrarVista('listado')">
                         <i class="bi bi-door-open"></i> Habitaciones
                     </a>
                 </li>
 
-                <!-- Enlace al formulario de nueva reserva -->
+                
                 <li class="nav-item">
                     <a class="nav-link" id="link-formulario" href="#" onclick="mostrarVista('formulario')">
                         <i class="bi bi-calendar-plus"></i> Nueva reserva
                     </a>
                 </li>
 
-                <!-- Enlaces visibles solo para ciertos roles (autorización simulada) -->
+                
                 <li class="nav-item elemento-solo-admin">
                     <a class="nav-link" id="link-huespedes" href="#">
                         <i class="bi bi-people"></i> Huéspedes
@@ -61,7 +47,7 @@
                 </li>
             </ul>
 
-            <!-- Indicador de rol activo + botón de cierre de sesión -->
+            
             <div class="d-flex align-items-center gap-2">
                 <span class="badge bg-light text-dark border">
                     <i class="bi bi-person-badge"></i> Rol: <span id="rol-actual-texto">Administrador</span>
@@ -74,13 +60,11 @@
     </div>
 </nav>
 
-<!-- ============================================================
-     VISTA 2: DASHBOARD / PANTALLA PRINCIPAL
-============================================================= -->
+
 <section id="vista-dashboard" class="vista activa flex-fill">
     <div class="container py-4">
 
-        <!-- Encabezado de bienvenida -->
+        
         <div class="mb-4">
             <h2><i class="bi bi-house-door"></i> Bienvenido a HotelGest</h2>
             <p class="texto-muted-personalizado">
@@ -88,7 +72,7 @@
             </p>
         </div>
 
-        <!-- Tarjetas de resumen con las métricas del hotel -->
+        
         <div class="row g-3 mb-4">
             <div class="col-sm-6 col-lg-3">
                 <div class="card tarjeta-resumen h-100">
@@ -136,7 +120,7 @@
             </div>
         </div>
 
-        <!-- Bloque de bienvenida con imagen ilustrativa -->
+        
         <div class="card border-0 bg-acento">
             <div class="card-body row align-items-center g-3">
                 <div class="col-md-8">
@@ -155,13 +139,11 @@
     </div>
 </section>
 
-<!-- ============================================================
-     VISTA 3: LISTADO DE HABITACIONES (TABLA)
-============================================================= -->
+
 <section id="vista-listado" class="vista flex-fill">
     <div class="container py-4">
 
-        <!-- Encabezado con botón para crear una nueva reserva -->
+        
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
             <h2 class="mb-0"><i class="bi bi-door-open"></i> Habitaciones</h2>
             <button class="btn btn-primario btn-sm" onclick="mostrarVista('formulario')">
@@ -169,14 +151,14 @@
             </button>
         </div>
 
-        <!-- Buscador / filtro simple sobre la tabla -->
+        
         <div class="input-group mb-3" style="max-width: 350px;">
             <span class="input-group-text bg-muted"><i class="bi bi-search"></i></span>
             <input type="text" id="buscador-habitaciones" class="form-control"
                    placeholder="Buscar por número o tipo..." onkeyup="filtrarHabitaciones()">
         </div>
 
-        <!-- Tabla de habitaciones -->
+        
         <div class="table-responsive">
             <table class="table table-striped table-hover align-middle bg-white">
                 <thead class="table-light">
@@ -188,12 +170,12 @@
                         <th>Estado</th>
                     </tr>
                 </thead>
-                <!-- El cuerpo se puebla dinámicamente desde js/data/habitaciones.js -->
+                
                 <tbody id="cuerpo-tabla-habitaciones">
-                    <!-- Las filas se generan por JavaScript al iniciar la app -->
+                    
                 </tbody>
             </table>
-            <!-- Mensaje que aparece si el filtro no encuentra resultados -->
+            
             <p id="mensaje-sin-resultados" class="text-center texto-muted-personalizado d-none">
                 No se encontraron habitaciones que coincidan con la búsqueda.
             </p>
@@ -201,25 +183,23 @@
     </div>
 </section>
 
-<!-- ============================================================
-     VISTA 4: LISTADO DE HUÉSPEDES
-============================================================= -->
+
 <section id="vista-listado-huespedes" class="vista flex-fill">
     <div class="container py-4">
 
-        <!-- Encabezado de la sección -->
+        
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
             <h2 class="mb-0"><i class="bi bi-people"></i> Huéspedes</h2>
         </div>
 
-        <!-- Buscador de huéspedes -->
+        
         <div class="input-group mb-3" style="max-width: 350px;">
             <span class="input-group-text bg-muted"><i class="bi bi-search"></i></span>
             <input type="text" id="buscador-huespedes" class="form-control"
                    placeholder="Buscar por nombre o documento..." onkeyup="filtrarHuespedes()">
         </div>
 
-        <!-- Tabla de huéspedes -->
+       
         <div class="table-responsive">
             <table class="table table-striped table-hover align-middle bg-white">
                 <thead class="table-light">
@@ -232,10 +212,10 @@
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <!-- Filas de huéspedes se poblarán dinámicamente o desde backend -->
+                
                 <tbody id="cuerpo-tabla-huespedes"></tbody>
             </table>
-            <!-- Mensaje que aparece si el filtro no encuentra resultados -->
+            
             <p id="mensaje-sin-resultados-huespedes" class="text-center texto-muted-personalizado d-none">
                 No se encontraron huéspedes que coincidan con la búsqueda.
             </p>
@@ -243,18 +223,16 @@
     </div>
 </section>
 
-<!-- ============================================================
-     VISTA 5: RESUMEN DE PAGOS
-============================================================= -->
+
 <section id="vista-pagos" class="vista flex-fill">
     <div class="container py-4">
 
-        <!-- Encabezado de la sección -->
+       
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
             <h2 class="mb-0"><i class="bi bi-cash-coin"></i> Pagos</h2>
         </div>
 
-        <!-- Resumen general de pagos -->
+        
         <div class="row g-3 mb-4">
             <div class="col-sm-6 col-lg-3">
                 <div class="card tarjeta-resumen h-100">
@@ -291,7 +269,7 @@
             </div>
         </div>
 
-        <!-- Lista de reservas por estado de pago -->
+        
         <div class="card tarjeta-resumen">
             <div class="card-header">
                 <h4 class="mb-0">Reservas por Estado de Pago</h4>
@@ -319,15 +297,13 @@
     </div>
 </section>
 
-<!-- ============================================================
-     VISTA 6: FORMULARIO - NUEVA RESERVA
-============================================================= -->
+
 <section id="vista-formulario" class="vista flex-fill">
     <div class="container py-4">
 
         <h2 class="mb-3"><i class="bi bi-calendar-plus"></i> Nueva reserva</h2>
 
-        <!-- Mensajes de confirmación / error, ocultos por defecto -->
+        
         <div id="alerta-exito" class="alert alert-success d-none" role="alert">
             <i class="bi bi-check-circle"></i> Reserva registrada correctamente.
         </div>
@@ -335,12 +311,12 @@
             <i class="bi bi-exclamation-triangle"></i> Revise los campos marcados: hay datos obligatorios sin completar.
         </div>
 
-        <!-- Tarjeta que contiene el formulario -->
+        
         <div class="card border-0 shadow-sm">
             <div class="card-body">
                 <form id="form-reserva" class="row g-3 needs-validation" novalidate>
 
-                    <!-- Campo: nombre del huésped -->
+                    
                     <div class="col-md-6">
                         <label for="huesped" class="form-label">Huésped</label>
                         <input type="text" class="form-control" id="huesped"
@@ -348,7 +324,7 @@
                         <div class="invalid-feedback">Ingrese el nombre del huésped.</div>
                     </div>
 
-                    <!-- Campo: habitación (solo habitaciones disponibles) -->
+                    
                     <div class="col-md-6">
                         <label for="habitacion-reserva" class="form-label">Habitación</label>
                         <select class="form-select" id="habitacion-reserva" required>
@@ -360,21 +336,21 @@
                         <div class="invalid-feedback">Seleccione una habitación disponible.</div>
                     </div>
 
-                    <!-- Campo: fecha de entrada -->
+                    
                     <div class="col-md-6">
                         <label for="fecha-entrada" class="form-label">Fecha de entrada</label>
                         <input type="date" class="form-control" id="fecha-entrada" required>
                         <div class="invalid-feedback">Ingrese la fecha de entrada.</div>
                     </div>
 
-                    <!-- Campo: fecha de salida -->
+                    
                     <div class="col-md-6">
                         <label for="fecha-salida" class="form-label">Fecha de salida</label>
                         <input type="date" class="form-control" id="fecha-salida" required>
                         <div class="invalid-feedback">Ingrese la fecha de salida.</div>
                     </div>
 
-                    <!-- Campo: estado del pago -->
+                    
                     <div class="col-md-6">
                         <label for="estado-pago" class="form-label">Estado del pago</label>
                         <select class="form-select" id="estado-pago" required>
@@ -386,14 +362,14 @@
                         <div class="invalid-feedback">Seleccione el estado del pago.</div>
                     </div>
 
-                    <!-- Campo: observaciones (opcional) -->
+                    
                     <div class="col-md-6">
                         <label for="observaciones" class="form-label">Observaciones (opcional)</label>
                         <input type="text" class="form-control" id="observaciones"
                                placeholder="Preferencias, pedidos especiales, etc.">
                     </div>
 
-                    <!-- Botones de acciones del formulario -->
+                    
                     <div class="col-12 d-flex gap-2 mt-4">
                         <button type="submit" class="btn btn-primario">
                             <i class="bi bi-save"></i> Guardar reserva
