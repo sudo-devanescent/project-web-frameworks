@@ -1,12 +1,4 @@
-<!-- ================================================================
-     VISTA 1: PANTALLA DE LOGIN
-     Sin navbar de navegación interna, ya que el usuario aún no
-     ha ingresado al sistema. Header y footer simplificados.
-     Este archivo es un parcial que se inserta en <section id="vista-login">
-     del index.html mediante el cargador de vistas.
-================================================================= -->
 
-<!-- Header simple, solo con el nombre del sistema -->
 <header class="bg-primario text-white text-center py-3 position-absolute top-0 start-0 w-100">
     <h1 class="h4 mb-0"></i> Iniciar Sesión</h1>
 </header>
@@ -14,15 +6,15 @@
 <div class="contenedor-login px-3">
     <div class="card tarjeta-login shadow-sm p-4 rounded-3">
         <div class="card-body">
-            <!-- Encabezado de la tarjeta con icono de llave -->
+           
            <div class="text-center mb-4">
            <img src="img/logo-horizontal-v2.svg" alt="Logo HotelGest" class="mb-3" style="max-width: 280px; width: 100%;" >
            </div>
 
-            <!-- Formulario de login con validación visual de Bootstrap -->
+            
             <form id="form-login" class="needs-validation" novalidate>
 
-                <!-- Campo de usuario -->
+                
                 <div class="mb-3">
                     <label for="usuario" class="form-label">Usuario</label>
                     <input type="text" class="form-control" id="usuario"
@@ -32,7 +24,7 @@
                     </div>
                 </div>
 
-                <!-- Campo de contraseña -->
+                
                 <div class="mb-3">
                     <label for="contrasena" class="form-label">Contraseña</label>
                     <input type="password" class="form-control" id="contrasena"
@@ -42,9 +34,7 @@
                     </div>
                 </div>
 
-                <!-- Selector de rol: simula distintos permisos de acceso.
-                     En el sistema real, el rol vendría determinado por el
-                     backend (Spring Security) tras autenticar al usuario. -->
+                
                 <div class="mb-3">
                     <label for="rol-login" class="form-label">Rol (simulado para el prototipo)</label>
                     <select class="form-select" id="rol-login">
@@ -54,7 +44,7 @@
                     </select>
                 </div>
 
-                <!-- Botón de envío del formulario -->
+                
                 <button type="submit" class="btn btn-primario w-100">
                     <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
                 </button>
@@ -63,7 +53,7 @@
     </div>
 </div>
 
-<!-- Footer simplificado de la pantalla de login -->
+
 <footer class="footer-hotel text-center py-2 position-absolute bottom-0 start-0 w-100 small">
     &copy; 2026 HotelGest - Proyecto de Desarrollo web
 </footer>
