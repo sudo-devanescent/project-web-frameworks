@@ -21,3 +21,6 @@ Thumbs.db
 # Archivos de editor/IDE
 .vscode/
 .idea/
+
+# Archivo de linting (.md)
+.markdownlint.json
