@@ -5,8 +5,13 @@
      Formulario): el navbar principal con el menú de navegación,
      todas las secciones internas y el footer común.
      Se inserta en <div id="contenedor-interno"> del index.html
-     mediante el cargador de vistas.
+     mediante th:insert. El contenedor del fragmento es <th:block>
+     porque navbar, vistas y footer deben seguir siendo hijos directos
+     de #contenedor-interno: ese contenedor es un flex column y el
+     footer se ancla abajo con margin-top:auto.
 ================================================================= -->
+
+<th:block th:fragment="contenido-interno">
 
 <!-- ============================================================
      NAVBAR PRINCIPAL
@@ -413,3 +418,5 @@
 <footer class="footer-hotel text-center py-3 mt-auto">
     <small>&copy; 2026 HostOps - Proyecto de Desarrollo web</small>
 </footer>
+
+</th:block>

@@ -2,9 +2,13 @@
      VISTA 1: PANTALLA DE LOGIN
      Sin navbar de navegación interna, ya que el usuario aún no
      ha ingresado al sistema. Header y footer simplificados.
-     Este archivo es un parcial que se inserta en <section id="vista-login">
-     del index.html mediante el cargador de vistas.
+     Este archivo es un fragmento Thymeleaf que se inserta en
+     <section id="vista-login"> del index.html mediante th:insert.
+     El contenedor del fragmento es <th:block> porque no debe añadir
+     ningún elemento al DOM.
 ================================================================= -->
+
+<th:block th:fragment="login">
 
 <!-- Header simple, solo con el nombre del sistema -->
 <header class="bg-primario text-white text-center py-3 position-absolute top-0 start-0 w-100">
@@ -69,3 +73,5 @@
 <footer class="footer-hotel text-center py-2 position-absolute bottom-0 start-0 w-100 small">
     &copy; 2026 HostOps - Proyecto de Desarrollo web
 </footer>
+
+</th:block>

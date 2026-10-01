@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HostOps - Sistema de Gestión Hotelera</title>
+
+    <!-- ============================================================
+         LIBRERÍAS EXTERNAS (CDN)
+         - Bootstrap 5: framework de front end (grid, componentes, utilidades)
+         - Bootstrap Icons: iconografía para navbar, tarjetas y botones
+    ============================================================= -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Estilos propios del proyecto, todos modularizados en la carpeta /css.
+         El archivo main.css importa e integra el resto de hojas de estilo. -->
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+
+    <!-- ============================================================
+         CONTENEDORES PRINCIPALES (esqueleto)
+         Thymeleaf renderiza aquí los fragmentos de las vistas. No se
+         cargan por fetch(): el servidor entrega el HTML completo.
+
+         Se usa th:insert (y no th:replace) para conservar en el DOM
+         el id y las clases de cada contenedor, de los que dependen
+         los módulos JavaScript del frontend.
+
+         - #vista-login:         pantalla de inicio de sesión (pública)
+         - #contenedor-interno:  contenedor de las vistas autenticadas
+                                 (dashboard, habitaciones, huéspedes, pagos,
+                                 formulario) con su navbar y footer común
+    ============================================================= -->
+
+    <!-- Pantalla de login (fragmento "login" de templates/login.html) -->
+    <section id="vista-login" class="vista activa"
+             th:insert="~{login :: login}"></section>
+
+    <!-- Contenedor de las vistas internas (fragmento "contenido-interno"
+         de templates/contenido-interno.html). Inicia oculto hasta que el
+         usuario inicia sesión. -->
+    <div id="contenedor-interno" class="vista"
+         th:insert="~{contenido-interno :: contenido-interno}"></div>
+
+    <!-- ============================================================
+         LIBRERÍAS JS + LÓGICA DE LA APLICACIÓN
+         Bootstrap y el módulo principal de la aplicación. main.js
+         inicializa los módulos (router, autenticación, filtros,
+         formularios) sobre un DOM que ya viene completo.
+    ============================================================= -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" th:src="@{/js/main.js}"></script>
+
+</body>
+</html>
