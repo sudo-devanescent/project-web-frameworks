@@ -1,0 +1,32 @@
+/**
+ * @file styles.css
+ * @description Punto de entrada principal de estilos CSS.
+ * Importa todos los módulos en orden de dependencia.
+ * @author HostOps Team
+ * @version 1.0.0
+ */
+
+/* =====================================================================
+   ORDEN DE IMPORTACIÓN (importante para cascada y precedencia)
+   ===================================================================== */
+
+/* 1. Tokens - Base de todo el sistema de diseño */
+@import './tokens.css';
+
+/* 2. Base - Reset, tipografía, overrides Bootstrap */
+@import './base.css';
+
+/* 3. Componentes - UI reutilizable */
+@import './components/login.css';
+@import './components/tables.css';
+@import './components/cards.css';
+@import './components/forms.css';
+@import './components/modals.css';
+
+/* 4. Vistas - Estilos específicos por página (opcional, para futuras necesidades) */
+@import './views/dashboard.css';
+@import './views/habitaciones.css';
+@import './views/reservas.css';
+@import './views/huespedes.css';
+@import './views/finanzas.css';
+@import './views/configuracion.css';

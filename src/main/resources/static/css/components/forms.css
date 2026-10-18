@@ -1,0 +1,34 @@
+/**
+ * @file forms.css
+ * @description Estilos específicos de formularios y validación.
+ * Complementa los estilos base de Bootstrap.
+ * @author HostOps Team
+ * @version 1.0.0
+ */
+
+/* =====================================================================
+   Formularios - Estilos adicionales
+   ===================================================================== */
+
+/* Los estilos de formularios específicos del login están en login.css */
+/* Este archivo queda disponible para estilos de formularios futuros */
+/* que no sean del login (ej: modales, páginas de configuración, etc.) */
+
+/* =====================================================================
+   Validación: sin iconos de ✓ de Bootstrap (ruido visual)
+   Se conservan bordes verde/rojo y mensajes de error; en el select
+   se restaura la flecha base (sin el check superpuesto).
+   ===================================================================== */
+
+.was-validated .form-control:valid {
+  background-image: none;
+  padding-right: 0.75rem;
+}
+
+.was-validated .form-select:valid:not([multiple]):not([size]),
+.was-validated .form-select:valid:not([multiple])[size="1"] {
+  --bs-form-select-bg-icon: none;
+  padding-right: 2.25rem;
+  background-position: right 0.75rem center;
+  background-size: 16px 12px;
+}

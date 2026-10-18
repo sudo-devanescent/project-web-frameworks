@@ -11,6 +11,8 @@ build/
 .gradle/native/
 .gradle/workers/
 .gradle/checksums/
+# Caché de classpath del language server de Kotlin/Gradle (no es datos de la app)
+kls_database.db
 
 # =====================================================================
 # 2. JAVA Y COMPILACIÓN

@@ -1,0 +1,464 @@
+/**
+ * @file login.css
+ * @description Estilos del login en pantalla dividida.
+ * Panel de marca (azul) + panel de formulario (claro).
+ * Paleta fija e independiente del tema.
+ * Móvil: apilado; tablet: banner compacto; desde 992px: dos columnas.
+ * @author HostOps Team
+ * @version 1.0.0
+ */
+
+/* =====================================================================
+   1.4 Login en pantalla dividida
+   ===================================================================== */
+
+#login {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: #fcfcfd;
+  color: #151d28;
+}
+
+.lg-brand {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.5rem;
+  color: #fff;
+  background:
+    radial-gradient(38rem 24rem at 15% 10%, rgba(82, 139, 230, 0.5), transparent 62%),
+    radial-gradient(30rem 22rem at 90% 100%, rgba(82, 139, 230, 0.28), transparent 60%), #103973;
+}
+
+.lg-brand::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0 1px,
+    transparent 1px 30px
+  );
+}
+
+.lg-brand::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  width: 22rem;
+  height: 22rem;
+  right: -7rem;
+  bottom: -11rem;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 0 0 2.5rem rgba(255, 255, 255, 0.03),
+    0 0 0 5rem rgba(255, 255, 255, 0.02);
+}
+
+.lg-word {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.lg-word::after {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-top: 0.55rem;
+  border-radius: 50%;
+  background: #f0d75a;
+}
+
+.lg-hero {
+  display: none;
+  align-items: center;
+  gap: 0.9rem;
+  max-width: 22rem;
+}
+
+.lg-ico {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.85rem;
+  font-size: 1.35rem;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.lg-title {
+  display: none;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.lg-msg {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.lg-foot {
+  display: none;
+  margin: 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.lg-form {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1.25rem 2rem;
+}
+
+.lg-box {
+  width: 100%;
+  max-width: 26rem;
+}
+
+.lg-h {
+  margin: 0 0 0.35rem;
+  font-size: 1.65rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #151d28;
+}
+
+.lg-p {
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+  color: #626f84;
+}
+
+.lg-lab {
+  display: block;
+  padding: 0;
+  margin: 0 0 0.4rem;
+  float: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #151d28;
+}
+
+.lg-field {
+  position: relative;
+}
+
+.lg-field > i {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #626f84;
+  transition: color 0.15s;
+  pointer-events: none;
+}
+
+.lg-field input {
+  width: 100%;
+  height: 3rem;
+  padding: 0 2.75rem 0 2.6rem;
+  border: 1.5px solid #7c8aa0;
+  border-radius: 0.65rem;
+  background: #fff;
+  color: #151d28;
+  font-size: 1rem;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.lg-field input::placeholder {
+  color: #626f84;
+}
+
+.lg-field input:hover {
+  border-color: #103973;
+}
+
+.lg-field input:focus {
+  outline: 0;
+  border-color: #1c64ca;
+  box-shadow: 0 0 0 0.2rem rgba(28, 100, 202, 0.25);
+}
+
+.lg-field:focus-within > i {
+  color: #103973;
+}
+
+.lg-eye {
+  position: absolute;
+  right: 0.35rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 0;
+  border-radius: 0.55rem;
+  background: transparent;
+  color: #626f84;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.lg-eye:hover,
+.lg-eye:focus-visible {
+  outline: 0;
+  color: #103973;
+  background: #f2f4f7;
+}
+
+.lg-roles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.lg-roles input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lg-roles label {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0.8rem;
+  border: 1px solid #e0e5eb;
+  border-radius: 0.8rem;
+  background: #fff;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    box-shadow 0.15s;
+}
+
+.lg-roles label:hover {
+  border-color: #528be6;
+}
+
+.lg-r {
+  margin-bottom: 0.15rem;
+  font-size: 1.25rem;
+  color: #528be6;
+  transition: color 0.15s;
+}
+
+.lg-roles b {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #151d28;
+}
+
+.lg-roles small {
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: #626f84;
+}
+
+.lg-chk {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  background: #103973;
+  color: #fff;
+  box-shadow: 0 0 0 2px #fff;
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
+}
+
+.lg-roles input:checked + label {
+  border-color: #103973;
+  background: rgba(16, 57, 115, 0.06);
+  box-shadow: 0 0 0 1px #103973 inset;
+}
+
+.lg-roles input:checked + label .lg-r {
+  color: #103973;
+}
+
+.lg-roles input:checked + label .lg-chk {
+  opacity: 1;
+  transform: none;
+}
+
+.lg-roles input:focus-visible + label {
+  outline: 2px solid #1c64ca;
+  outline-offset: 2px;
+}
+
+.lg-err {
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.65rem;
+  font-size: 0.88rem;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.lg-btn {
+  width: 100%;
+  height: 3rem;
+  border: 0;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #fff;
+  background: #103973;
+  transition:
+    background 0.2s,
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.lg-btn i {
+  transition: transform 0.2s;
+}
+
+.lg-btn:hover {
+  background: #1a4a94;
+  box-shadow: 0 8px 20px rgba(16, 57, 115, 0.28);
+}
+
+.lg-btn:hover i {
+  transform: translateX(4px);
+}
+
+.lg-btn:active {
+  transform: scale(0.99);
+}
+
+.lg-btn:focus-visible {
+  outline: 2px solid #1c64ca;
+  outline-offset: 3px;
+}
+
+.lg-note {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin: 1.1rem 0 0;
+  padding: 0.65rem 0.8rem;
+  border-radius: 0.65rem;
+  background: #f2f4f7;
+  color: #626f84;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+@media (min-width: 576px) {
+  .lg-brand {
+    padding: 1.25rem 2rem;
+  }
+  .lg-hero {
+    display: flex;
+  }
+  .lg-form {
+    padding: 2.5rem;
+  }
+}
+
+@media (min-width: 992px) {
+  #login {
+    flex-direction: row;
+  }
+  .lg-brand {
+    flex: 0 0 50%;
+    max-width: 50%;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 2.5rem 3rem;
+  }
+  .lg-word {
+    font-size: 1.75rem;
+  }
+  .lg-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    max-width: 26rem;
+  }
+  .lg-ico {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 1.4rem;
+    font-size: 2.4rem;
+  }
+  .lg-title {
+    display: block;
+    font-size: clamp(1.9rem, 2.6vw, 2.6rem);
+    line-height: 1.15;
+  }
+  .lg-title::after {
+    content: '';
+    display: block;
+    width: 3rem;
+    height: 4px;
+    margin-top: 1rem;
+    border-radius: 2px;
+    background: #f0d75a;
+  }
+  .lg-msg {
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+  .lg-foot {
+    display: block;
+  }
+  .lg-h {
+    font-size: 1.9rem;
+  }
+  .lg-form {
+    flex: 0 0 50%;
+    max-width: 50%;
+    min-width: 0;
+    padding: 3rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-btn,
+  .lg-btn i,
+  .lg-field input,
+  .lg-roles label,
+  .lg-chk {
+    transition: none;
+  }
+}

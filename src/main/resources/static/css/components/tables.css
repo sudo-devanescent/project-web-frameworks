@@ -1,0 +1,104 @@
+/**
+ * @file tables.css
+ * @description Tablas responsivas y componentes de iconos KPI.
+ * Tabla clásica desde md; tarjetas verticales en móvil (<768px).
+ * Cada <td> recibe data-label con el nombre de su columna (lo agrega la función tb()).
+ * @author HostOps Team
+ * @version 1.0.0
+ */
+
+/* =====================================================================
+   1.5 Tablas responsivas
+   ===================================================================== */
+
+@media (max-width: 767.98px) {
+  .tabla-resp,
+  .tabla-resp tbody {
+    display: block;
+    width: 100%;
+  }
+  .tabla-resp thead {
+    display: none;
+  }
+  .tabla-resp tr {
+    display: block;
+    margin: 0.75rem;
+    padding: 0.3rem 0.95rem;
+    border: 1px solid var(--bd);
+    border-radius: 0.85rem;
+    background: var(--card);
+    box-shadow:
+      0 1px 2px rgba(16, 57, 115, 0.06),
+      0 6px 16px rgba(16, 57, 115, 0.07);
+  }
+  .tabla-resp td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.55rem 0;
+    border: 0;
+    border-bottom: 1px dashed var(--bd);
+    text-align: right;
+    white-space: normal !important;
+    background: transparent;
+    box-shadow: none;
+  }
+  .tabla-resp td:last-child {
+    border-bottom: 0;
+  }
+  .tabla-resp td::before {
+    content: attr(data-label);
+    flex: 0 0 auto;
+    max-width: 45%;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: left;
+    color: var(--mutfg);
+  }
+  .tabla-resp td[data-label=''] {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    padding-top: 0.75rem;
+  }
+  .tabla-resp td[data-label='']::before {
+    display: none;
+  }
+  .tabla-resp td[colspan] {
+    display: block;
+    text-align: center;
+  }
+  .tabla-resp td[colspan]::before {
+    display: none;
+  }
+  .tabla-resp td .btn {
+    min-height: 2.25rem;
+  }
+  .tabla-resp .form-check {
+    margin: 0;
+    min-height: 0;
+  }
+  .table-responsive {
+    overflow-x: visible;
+  }
+}
+
+/* =====================================================================
+   Iconos KPI
+   ===================================================================== */
+
+.kpi-ico {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  background: var(--mut);
+  color: var(--pri);
+}
+
+.kpi-ico.alerta {
+  background: var(--acc);
+  color: #0a0a0a;
+}

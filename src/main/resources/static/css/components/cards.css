@@ -1,0 +1,42 @@
+/**
+ * @file cards.css
+ * @description Tarjetas de habitaciones y componentes visuales varios.
+ * Estados de habitación con borde lateral de color.
+ * @author HostOps Team
+ * @version 1.0.0
+ */
+
+/* =====================================================================
+   Tarjetas de habitación y estados
+   ===================================================================== */
+
+.room {
+  border-left: 6px solid var(--c);
+}
+
+.e-disponible {
+  --c: #198754;
+}
+
+.e-ocupada {
+  --c: var(--pri);
+}
+
+.e-limpieza {
+  --c: var(--acc);
+}
+
+.e-mantenimiento {
+  --c: #ef4444;
+}
+
+.room .num {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.linea {
+  background: var(--mut);
+}

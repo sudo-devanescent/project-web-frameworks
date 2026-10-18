@@ -1,0 +1,14 @@
+/**
+ * @file modals.css
+ * @description Estilos para modales genéricos y contenedor de toasts.
+ * @author HostOps Team
+ * @version 1.0.0
+ */
+
+/* =====================================================================
+   Modales y Toasts
+   ===================================================================== */
+
+.toast-container {
+  z-index: 2000;
+}

@@ -1,11 +1,112 @@
-/* ============================================================
-   ESTILOS BASE
-   Define el fondo general, el color de texto y la fuente
-   tipográfica de todo el sitio.
-   ============================================================= */
+/**
+ * @file base.css
+ * @description Estilos base y ajustes sobre Bootstrap.
+ * Reset, tipografía, overrides de componentes Bootstrap usando tokens CSS.
+ * @author HostOps Team
+ * @version 1.0.0
+ */
+
+/* =====================================================================
+   1.2 Base y ajustes sobre Bootstrap
+   ===================================================================== */
+
+[hidden] {
+  display: none !important;
+}
 
 body {
-    background-color: var(--color-fondo);
-    color: var(--color-texto);
-    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-family: Figtree, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  --bs-body-bg: var(--bg);
+  --bs-body-color: var(--fg);
+  --bs-border-color: var(--bd);
+  --bs-secondary-color: var(--mutfg);
+  --bs-link-color: var(--pri);
+}
+
+a {
+  color: var(--pri);
+}
+
+.navbar {
+  background: var(--nav);
+}
+
+.navbar .nav-link.active {
+  box-shadow: inset 0 -3px var(--acc);
+  color: #fff;
+}
+
+/* Menú móvil (mismo breakpoint que navbar-expand-lg): el grupo de acciones
+   de usuario se separa del listado con un divisor y espaciado propio */
+@media (max-width: 991.98px) {
+  .nav-acc {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    justify-content: flex-start;
+  }
+}
+
+.card,
+.modal {
+  --bs-card-bg: var(--card);
+  --bs-card-border-color: var(--bd);
+  --bs-modal-bg: var(--card);
+}
+
+.form-control,
+.form-select {
+  background-color: var(--card);
+  border-color: var(--bd);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--ring) 25%, transparent);
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--pri);
+  --bs-btn-border-color: var(--pri);
+  --bs-btn-hover-bg: var(--sec);
+  --bs-btn-hover-border-color: var(--sec);
+  --bs-btn-active-bg: var(--sec);
+  --bs-btn-color: #fff;
+  --bs-btn-hover-color: #fff;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--pri);
+  --bs-btn-border-color: var(--pri);
+  --bs-btn-hover-bg: var(--pri);
+  --bs-btn-hover-border-color: var(--pri);
+}
+
+.text-bg-primary {
+  background: var(--pri) !important;
+}
+
+.text-bg-info {
+  background: var(--sec) !important;
+  color: #fff !important;
+}
+
+.text-bg-warning {
+  background: var(--acc) !important;
+  color: #0a0a0a !important;
+}
+
+.table {
+  --bs-table-bg: transparent;
+}
+
+thead th {
+  font-size: 0.8rem;
+  color: var(--mutfg);
+  font-weight: 600;
+  white-space: nowrap;
 }

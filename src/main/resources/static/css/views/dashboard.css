@@ -1,24 +1,14 @@
-/* ============================================================
-   VISTA DASHBOARD (Pantalla principal)
-   Define el estilo de las tarjetas de resumen que muestran
-   las métricas del hotel (habitaciones, reservas, etc.).
-   ============================================================= */
+/**
+ * @file dashboard.css
+ * @description Estilos específicos de la vista Dashboard.
+ * Actualmente no requiere estilos propios; usa componentes globales.
+ * @author HostOps Team
+ * @version 1.0.0
+ */
 
-/* Tarjeta de resumen: borde fino, acento azul en el lateral
-   izquierdo y un ligero efecto de elevación al pasar el mouse */
-.tarjeta-resumen {
-    border: 1px solid var(--color-borde);
-    border-left: 4px solid var(--color-primario);
-    background-color: #ffffff;
-    transition: transform 0.15s ease-in-out;
-}
+/* =====================================================================
+   Dashboard - Estilos específicos (vacío por ahora)
+   ===================================================================== */
 
-.tarjeta-resumen:hover {
-    transform: translateY(-2px);
-}
-
-/* Icono dentro de cada tarjeta de resumen */
-.icono-resumen {
-    font-size: 1.8rem;
-    color: var(--color-primario);
-}
+/* Los KPIs, tarjetas y tablas usan componentes globales */
+/* Si se necesitan estilos específicos, añádanse aquí */

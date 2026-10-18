@@ -1,0 +1,47 @@
+/**
+ * @file tokens.css
+ * @description Tokens de diseño (design tokens) para el sistema HostOps.
+ * Define la paleta de colores, espaciados y valores base para temas claro/oscuro.
+ * @author HostOps Team
+ * @version 1.0.0
+ */
+
+/* =====================================================================
+   1.1 Tokens de color (paleta HostOps: tema claro y oscuro)
+   ===================================================================== */
+
+:root {
+  /* Colores base */
+  --bg: #fcfcfd;
+  --fg: #151d28;
+  --card: #fff;
+
+  /* Colores de marca */
+  --pri: #103973;      /* Primario: azul oscuro HostOps */
+  --sec: #528be6;      /* Secundario: azul medio */
+  --acc: #f0d75a;      /* Acento: amarillo/dorado */
+
+  /* Colores neutros */
+  --mut: #f2f4f7;      /* Muted: gris muy claro para fondos secundarios */
+  --mutfg: #626f84;    /* Muted foreground: texto secundario */
+  --bd: #e0e5eb;       /* Border: bordes sutiles */
+  --ring: #1c64ca;     /* Focus ring: anillo de foco accesible */
+
+  /* Navegación */
+  --nav: #103973;      /* Fondo navbar */
+}
+
+/* Tema oscuro: sobreescritura de tokens */
+[data-bs-theme='dark'] {
+  --bg: #14161a;
+  --fg: #f4f5f6;
+  --card: #1b2027;
+  --pri: #357ee3;
+  --sec: #518ae6;
+  --mut: #252c37;
+  --mutfg: #98a3b3;
+  --acc: #f0d75c;
+  --bd: #2d3643;
+  --ring: #357ee3;
+  --nav: #103973;
+}
