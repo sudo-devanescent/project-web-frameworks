@@ -1,4 +1,4 @@
-package com.hostops.hotelmanagement.controller;
+package com.hostops.hotelmanagement.controllers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

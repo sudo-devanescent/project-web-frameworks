@@ -1,3 +1,11 @@
 spring:
   application:
     name: hotel-management-system
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/hostops}
+    username: ${DB_USER:hostops}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false

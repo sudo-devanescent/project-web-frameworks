@@ -19,8 +19,7 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
-    // JPA se habilitará cuando configuremos la persistencia con PostgreSQL.
-	// implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	// Seguridad se habilitará cuando exista la autenticación real (Spring Security).
 	// implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
@@ -29,8 +28,7 @@ dependencies {
 	// implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 	runtimeOnly("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")
-    // Pruebas de JPA se habilitarán junto con la persistencia.
-	// testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
     // Las pruebas de seguridad se habilitarán con la autenticación real.
 	// testImplementation("org.springframework.boot:spring-boot-starter-security-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-thymeleaf-test")
