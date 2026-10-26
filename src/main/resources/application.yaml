@@ -9,3 +9,6 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+
+hostops:
+  zona-horaria: ${HOSTOPS_ZONA_HORARIA:America/Lima}

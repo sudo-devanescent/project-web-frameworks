@@ -381,13 +381,13 @@ INSERT INTO detalle_huesped (id_detalle, id_huesped) VALUES
 --    'cancelada'. Penalidad 0 = cancelación sin costo.
 -- ---------------------------------------------------------------------
 INSERT INTO cancelacion
-    (id_detalle, fecha_cancelacion, motivo, penalidad)
+    (id_detalle, id_usuario, fecha_cancelacion, motivo, penalidad)
 VALUES
-    (29, '2026-09-10 14:00:00-05', 'Cambio de fecha de viaje por motivos laborales',  0.00),
-    (30, '2026-10-03 16:20:00-05', 'Vuelo cancelado por la aerolínea',              300.00),
-    (32, '2026-10-16 10:15:00-05', 'Un integrante del grupo no podrá viajar',        70.00),
-    (33, '2026-10-17 18:20:00-05', 'Reprogramación por cambio de agenda',             0.00),
-    (34, '2026-10-18 10:00:00-05', 'Cambio de planes familiares',                    80.00);
+    (29, (SELECT COALESCE(r.id_usuario_modificador, r.id_usuario_creador) FROM detalle_reserva d JOIN reserva r ON r.id_reserva = d.id_reserva WHERE d.id_detalle = 29), '2026-09-10 14:00:00-05', 'Cambio de fecha de viaje por motivos laborales',  0.00),
+    (30, (SELECT COALESCE(r.id_usuario_modificador, r.id_usuario_creador) FROM detalle_reserva d JOIN reserva r ON r.id_reserva = d.id_reserva WHERE d.id_detalle = 30), '2026-10-03 16:20:00-05', 'Vuelo cancelado por la aerolínea',              300.00),
+    (32, (SELECT COALESCE(r.id_usuario_modificador, r.id_usuario_creador) FROM detalle_reserva d JOIN reserva r ON r.id_reserva = d.id_reserva WHERE d.id_detalle = 32), '2026-10-16 10:15:00-05', 'Un integrante del grupo no podrá viajar',        70.00),
+    (33, (SELECT COALESCE(r.id_usuario_modificador, r.id_usuario_creador) FROM detalle_reserva d JOIN reserva r ON r.id_reserva = d.id_reserva WHERE d.id_detalle = 33), '2026-10-17 18:20:00-05', 'Reprogramación por cambio de agenda',             0.00),
+    (34, (SELECT COALESCE(r.id_usuario_modificador, r.id_usuario_creador) FROM detalle_reserva d JOIN reserva r ON r.id_reserva = d.id_reserva WHERE d.id_detalle = 34), '2026-10-18 10:00:00-05', 'Cambio de planes familiares',                    80.00);
 
 
 -- ---------------------------------------------------------------------
@@ -395,78 +395,78 @@ VALUES
 --    Quedan con saldo pendiente: reservas 13 a 18, 20 a 26 y 29.
 --    Quedan con reembolso pendiente: reserva 31.
 -- ---------------------------------------------------------------------
-INSERT INTO pago (id_reserva, tipo, metodo, fecha_pago, monto) VALUES
+INSERT INTO pago (id_reserva, id_usuario, tipo, metodo, fecha_pago, monto) VALUES
     -- Reserva 1
-    ( 1, 'anticipo',  'efectivo',      '2026-08-05 10:30:00-05',  130.00),
-    ( 1, 'saldo',     'efectivo',      '2026-08-16 10:55:00-05',  130.00),
+    ( 1, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 1), 'anticipo',  'efectivo',      '2026-08-05 10:30:00-05',  130.00),
+    ( 1, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 1), 'saldo',     'efectivo',      '2026-08-16 10:55:00-05',  130.00),
     -- Reserva 2
-    ( 2, 'anticipo',  'transferencia', '2026-08-10 12:00:00-05',  200.00),
-    ( 2, 'saldo',     'tarjeta',       '2026-08-25 10:30:00-05',  400.00),
+    ( 2, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 2), 'anticipo',  'transferencia', '2026-08-10 12:00:00-05',  200.00),
+    ( 2, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 2), 'saldo',     'tarjeta',       '2026-08-25 10:30:00-05',  400.00),
     -- Reserva 3
-    ( 3, 'anticipo',  'efectivo',      '2026-08-23 15:50:00-05',   80.00),
-    ( 3, 'saldo',     'efectivo',      '2026-08-26 09:20:00-05',  160.00),
+    ( 3, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 3), 'anticipo',  'efectivo',      '2026-08-23 15:50:00-05',   80.00),
+    ( 3, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 3), 'saldo',     'efectivo',      '2026-08-26 09:20:00-05',  160.00),
     -- Reserva 4
-    ( 4, 'anticipo',  'tarjeta',       '2026-08-28 17:00:00-05',  400.00),
-    ( 4, 'saldo',     'tarjeta',       '2026-09-07 11:00:00-05',  800.00),
+    ( 4, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 4), 'anticipo',  'tarjeta',       '2026-08-28 17:00:00-05',  400.00),
+    ( 4, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 4), 'saldo',     'tarjeta',       '2026-09-07 11:00:00-05',  800.00),
     -- Reserva 5
-    ( 5, 'anticipo',  'transferencia', '2026-09-01 11:15:00-05',  200.00),
-    ( 5, 'saldo',     'tarjeta',       '2026-09-13 10:45:00-05',  320.00),
+    ( 5, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 5), 'anticipo',  'transferencia', '2026-09-01 11:15:00-05',  200.00),
+    ( 5, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 5), 'saldo',     'tarjeta',       '2026-09-13 10:45:00-05',  320.00),
     -- Reserva 6
-    ( 6, 'anticipo',  'transferencia', '2026-09-06 09:30:00-05',  150.00),
-    ( 6, 'saldo',     'tarjeta',       '2026-09-22 10:30:00-05',  300.00),
+    ( 6, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 6), 'anticipo',  'transferencia', '2026-09-06 09:30:00-05',  150.00),
+    ( 6, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 6), 'saldo',     'tarjeta',       '2026-09-22 10:30:00-05',  300.00),
     -- Reserva 7
-    ( 7, 'anticipo',  'efectivo',      '2026-09-15 16:20:00-05',  100.00),
-    ( 7, 'saldo',     'efectivo',      '2026-09-27 10:10:00-05',  180.00),
+    ( 7, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 7), 'anticipo',  'efectivo',      '2026-09-15 16:20:00-05',  100.00),
+    ( 7, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 7), 'saldo',     'efectivo',      '2026-09-27 10:10:00-05',  180.00),
     -- Reserva 8
-    ( 8, 'anticipo',  'tarjeta',       '2026-09-20 14:00:00-05',  500.00),
-    ( 8, 'saldo',     'tarjeta',       '2026-10-02 11:20:00-05',  780.00),
+    ( 8, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 8), 'anticipo',  'tarjeta',       '2026-09-20 14:00:00-05',  500.00),
+    ( 8, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 8), 'saldo',     'tarjeta',       '2026-10-02 11:20:00-05',  780.00),
     -- Reserva 9
-    ( 9, 'anticipo',  'efectivo',      '2026-10-03 13:30:00-05',   90.00),
-    ( 9, 'saldo',     'efectivo',      '2026-10-05 10:05:00-05',   90.00),
+    ( 9, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 9), 'anticipo',  'efectivo',      '2026-10-03 13:30:00-05',   90.00),
+    ( 9, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 9), 'saldo',     'efectivo',      '2026-10-05 10:05:00-05',   90.00),
     -- Reserva 10
-    (10, 'anticipo',  'tarjeta',       '2026-10-02 18:00:00-05',  140.00),
-    (10, 'saldo',     'tarjeta',       '2026-10-09 10:40:00-05',  280.00),
+    (10, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 10), 'anticipo',  'tarjeta',       '2026-10-02 18:00:00-05',  140.00),
+    (10, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 10), 'saldo',     'tarjeta',       '2026-10-09 10:40:00-05',  280.00),
     -- Reserva 11
-    (11, 'anticipo',  'transferencia', '2026-10-05 08:45:00-05',  160.00),
-    (11, 'saldo',     'efectivo',      '2026-10-12 10:50:00-05',  320.00),
+    (11, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 11), 'anticipo',  'transferencia', '2026-10-05 08:45:00-05',  160.00),
+    (11, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 11), 'saldo',     'efectivo',      '2026-10-12 10:50:00-05',  320.00),
     -- Reserva 12
-    (12, 'anticipo',  'tarjeta',       '2026-10-01 09:15:00-05',  300.00),
-    (12, 'saldo',     'tarjeta',       '2026-10-14 09:40:00-05',  500.00),
+    (12, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 12), 'anticipo',  'tarjeta',       '2026-10-01 09:15:00-05',  300.00),
+    (12, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 12), 'saldo',     'tarjeta',       '2026-10-14 09:40:00-05',  500.00),
     -- Reserva 13 (en estadía, saldo pendiente)
-    (13, 'anticipo',  'transferencia', '2026-10-08 13:00:00-05',  200.00),
+    (13, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 13), 'anticipo',  'transferencia', '2026-10-08 13:00:00-05',  200.00),
     -- Reserva 14 (en estadía, pago parcial)
-    (14, 'anticipo',  'tarjeta',       '2026-10-01 10:00:00-05',  800.00),
-    (14, 'saldo',     'tarjeta',       '2026-10-15 16:30:00-05',  600.00),
+    (14, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 14), 'anticipo',  'tarjeta',       '2026-10-01 10:00:00-05',  800.00),
+    (14, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 14), 'saldo',     'tarjeta',       '2026-10-15 16:30:00-05',  600.00),
     -- Reservas 15 a 18 (en estadía, solo anticipo)
-    (15, 'anticipo',  'transferencia', '2026-10-10 19:00:00-05',   90.00),
-    (16, 'anticipo',  'efectivo',      '2026-10-17 14:10:00-05',  150.00),
-    (17, 'anticipo',  'transferencia', '2026-10-11 11:30:00-05',  210.00),
-    (18, 'anticipo',  'efectivo',      '2026-10-12 17:40:00-05',  140.00),
+    (15, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 15), 'anticipo',  'transferencia', '2026-10-10 19:00:00-05',   90.00),
+    (16, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 16), 'anticipo',  'efectivo',      '2026-10-17 14:10:00-05',  150.00),
+    (17, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 17), 'anticipo',  'transferencia', '2026-10-11 11:30:00-05',  210.00),
+    (18, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 18), 'anticipo',  'efectivo',      '2026-10-12 17:40:00-05',  140.00),
     -- Reserva 19 (check-out de hoy, pagada)
-    (19, 'anticipo',  'efectivo',      '2026-10-15 13:20:00-05',   90.00),
-    (19, 'saldo',     'efectivo',      '2026-10-18 09:15:00-05',  180.00),
+    (19, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 19), 'anticipo',  'efectivo',      '2026-10-15 13:20:00-05',   90.00),
+    (19, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 19), 'saldo',     'efectivo',      '2026-10-18 09:15:00-05',  180.00),
     -- Reservas confirmadas
-    (20, 'anticipo',  'transferencia', '2026-10-14 12:30:00-05',  160.00),
-    (21, 'anticipo',  'tarjeta',       '2026-10-09 15:00:00-05',  700.00),
-    (21, 'anticipo',  'tarjeta',       '2026-10-16 10:00:00-05',  500.00),
-    (22, 'anticipo',  'efectivo',      '2026-10-16 16:00:00-05',  300.00),
-    (23, 'anticipo',  'tarjeta',       '2026-10-17 20:10:00-05',  400.00),
-    (24, 'anticipo',  'efectivo',      '2026-10-18 11:00:00-05',  160.00),
-    (25, 'anticipo',  'transferencia', '2026-10-02 09:50:00-05',  170.00),
-    (26, 'anticipo',  'transferencia', '2026-10-15 18:30:00-05',  640.00),
+    (20, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 20), 'anticipo',  'transferencia', '2026-10-14 12:30:00-05',  160.00),
+    (21, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 21), 'anticipo',  'tarjeta',       '2026-10-09 15:00:00-05',  700.00),
+    (21, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 21), 'anticipo',  'tarjeta',       '2026-10-16 10:00:00-05',  500.00),
+    (22, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 22), 'anticipo',  'efectivo',      '2026-10-16 16:00:00-05',  300.00),
+    (23, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 23), 'anticipo',  'tarjeta',       '2026-10-17 20:10:00-05',  400.00),
+    (24, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 24), 'anticipo',  'efectivo',      '2026-10-18 11:00:00-05',  160.00),
+    (25, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 25), 'anticipo',  'transferencia', '2026-10-02 09:50:00-05',  170.00),
+    (26, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 26), 'anticipo',  'transferencia', '2026-10-15 18:30:00-05',  640.00),
     -- Reserva 27: cancelada sin penalidad, anticipo devuelto
-    (27, 'anticipo',  'transferencia', '2026-09-02 10:20:00-05',  200.00),
-    (27, 'reembolso', 'transferencia', '2026-09-12 12:00:00-05',  200.00),
+    (27, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 27), 'anticipo',  'transferencia', '2026-09-02 10:20:00-05',  200.00),
+    (27, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 27), 'reembolso', 'transferencia', '2026-09-12 12:00:00-05',  200.00),
     -- Reserva 28: cancelada con penalidad de una noche; se devuelve el resto
-    (28, 'anticipo',  'tarjeta',       '2026-09-25 15:40:00-05',  450.00),
-    (28, 'reembolso', 'tarjeta',       '2026-10-05 11:30:00-05',  150.00),
+    (28, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 28), 'anticipo',  'tarjeta',       '2026-09-25 15:40:00-05',  450.00),
+    (28, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 28), 'reembolso', 'tarjeta',       '2026-10-05 11:30:00-05',  150.00),
     -- Reserva 29: cancelación parcial (una de las dos habitaciones)
-    (29, 'anticipo',  'transferencia', '2026-10-06 10:10:00-05',  280.00),
+    (29, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 29), 'anticipo',  'transferencia', '2026-10-06 10:10:00-05',  280.00),
     -- Reserva 30: cancelada sin penalidad, anticipo devuelto
-    (30, 'anticipo',  'transferencia', '2026-10-12 09:00:00-05',  140.00),
-    (30, 'reembolso', 'transferencia', '2026-10-17 18:30:00-05',  140.00),
+    (30, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 30), 'anticipo',  'transferencia', '2026-10-12 09:00:00-05',  140.00),
+    (30, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 30), 'reembolso', 'transferencia', '2026-10-17 18:30:00-05',  140.00),
     -- Reserva 31: cancelada con penalidad; reembolso aún no registrado
-    (31, 'anticipo',  'transferencia', '2026-10-07 12:45:00-05',  320.00);
+    (31, (SELECT id_usuario_creador FROM reserva WHERE id_reserva = 31), 'anticipo',  'transferencia', '2026-10-07 12:45:00-05',  320.00);
 
 
 -- ---------------------------------------------------------------------

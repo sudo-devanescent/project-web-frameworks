@@ -210,6 +210,7 @@ CREATE TABLE detalle_huesped (
 CREATE TABLE cancelacion (
     id_cancelacion    INTEGER GENERATED ALWAYS AS IDENTITY,
     id_detalle        INTEGER       NOT NULL,
+    id_usuario        INTEGER       NOT NULL,
     fecha_cancelacion TIMESTAMPTZ   NOT NULL DEFAULT now(),
     motivo            TEXT          NOT NULL,
     penalidad         NUMERIC(10,2) NOT NULL DEFAULT 0,
@@ -217,6 +218,8 @@ CREATE TABLE cancelacion (
     CONSTRAINT uq_cancelacion_detalle UNIQUE (id_detalle),
     CONSTRAINT fk_cancelacion_detalle FOREIGN KEY (id_detalle)
         REFERENCES detalle_reserva (id_detalle) ON DELETE RESTRICT,
+    CONSTRAINT fk_cancelacion_usuario FOREIGN KEY (id_usuario)
+        REFERENCES usuario (id_usuario) ON DELETE RESTRICT,
     CONSTRAINT ck_cancelacion_penalidad CHECK (penalidad >= 0)
 );
 
@@ -224,16 +227,25 @@ CREATE TABLE cancelacion (
 --      El monto siempre es positivo; el tipo (anticipo, saldo, reembolso)
 --      indica si el dinero entra o sale.
 CREATE TABLE pago (
-    id_pago    INTEGER GENERATED ALWAYS AS IDENTITY,
-    id_reserva INTEGER              NOT NULL,
-    tipo       tipo_movimiento_pago NOT NULL,
-    metodo     metodo_pago          NOT NULL,
-    fecha_pago TIMESTAMPTZ          NOT NULL DEFAULT now(),
-    monto      NUMERIC(10,2)        NOT NULL,
+    id_pago         INTEGER GENERATED ALWAYS AS IDENTITY,
+    id_reserva      INTEGER              NOT NULL,
+    id_usuario      INTEGER              NOT NULL,
+    id_pago_original INTEGER,
+    tipo            tipo_movimiento_pago NOT NULL,
+    metodo          metodo_pago          NOT NULL,
+    fecha_pago      TIMESTAMPTZ          NOT NULL DEFAULT now(),
+    monto           NUMERIC(10,2)        NOT NULL,
+    motivo          TEXT,
     CONSTRAINT pk_pago PRIMARY KEY (id_pago),
     CONSTRAINT fk_pago_reserva FOREIGN KEY (id_reserva)
         REFERENCES reserva (id_reserva) ON DELETE RESTRICT,
-    CONSTRAINT ck_pago_monto CHECK (monto > 0)
+    CONSTRAINT fk_pago_usuario FOREIGN KEY (id_usuario)
+        REFERENCES usuario (id_usuario) ON DELETE RESTRICT,
+    CONSTRAINT fk_pago_original FOREIGN KEY (id_pago_original)
+        REFERENCES pago (id_pago) ON DELETE RESTRICT,
+    CONSTRAINT ck_pago_monto CHECK (monto > 0),
+    CONSTRAINT ck_pago_no_autocompensacion
+        CHECK (id_pago_original IS NULL OR id_pago_original <> id_pago)
 );
 
 
@@ -252,6 +264,11 @@ CREATE INDEX ix_detalle_reserva        ON detalle_reserva (id_reserva);
 CREATE INDEX ix_detalle_fecha_entrada  ON detalle_reserva (fecha_entrada_prevista);
 CREATE INDEX ix_detalle_huesped_huesp  ON detalle_huesped (id_huesped);
 CREATE INDEX ix_pago_reserva           ON pago (id_reserva);
+CREATE INDEX ix_pago_usuario           ON pago (id_usuario);
+CREATE INDEX ix_cancelacion_usuario    ON cancelacion (id_usuario);
+-- Una sola compensación por movimiento original (P2: compensación única).
+CREATE UNIQUE INDEX uq_pago_compensacion
+    ON pago (id_pago_original) WHERE id_pago_original IS NOT NULL;
 CREATE INDEX ix_huesped_apellidos      ON huesped (apellidos, nombres);
 
 

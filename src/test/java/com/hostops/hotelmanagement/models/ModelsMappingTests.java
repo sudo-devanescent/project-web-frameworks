@@ -275,6 +275,7 @@ class ModelsMappingTests {
 
 		Cancelacion cancelacion = new Cancelacion();
 		cancelacion.setDetalleReserva(detalle);
+		cancelacion.setUsuario(creador);
 		cancelacion.setMotivo("Prueba de mapeo");
 		cancelacion.setFechaCancelacion(null);
 		cancelacion.setPenalidad(null);

@@ -8,6 +8,7 @@ Esquema y datos de ejemplo del sistema de gestión hotelera sobre **PostgreSQL 1
 | --- | --- |
 | `hostops_schema.sql` | DDL: extensiones, tipos ENUM, 11 tablas, índices, funciones/triggers y 2 vistas. Incluye los roles y canales iniciales. |
 | `hostops_seed.sql` | Datos de ejemplo (usuarios, habitaciones, huéspedes, reservas, pagos, etc.). Debe ejecutarse **después** del esquema sobre una base recién creada. |
+| `hostops_migration_001_auditoria_pagos.sql` | Migración manual e idempotente para bases ya pobladas: añade auditoría a pagos/cancelaciones y el vínculo de compensación. |
 
 ## Requisitos
 
@@ -38,6 +39,19 @@ podman exec -i hostops-db psql -U hostops -d hostops -v ON_ERROR_STOP=1 < db/hos
 
 `schema.sql` es idempotente en los datos iniciales (`ON CONFLICT DO NOTHING`), pero
 **no** recrea tablas: para reiniciar usa la sección 7 comentada del propio script.
+
+### Base ya poblada
+
+Si la base ya existe y tiene datos, no vuelvas a cargar el esquema. Aplica la
+migración manual:
+
+```bash
+podman exec -i hostops-db psql -U hostops -d hostops -v ON_ERROR_STOP=1 < db/hostops_migration_001_auditoria_pagos.sql
+```
+
+La migración rellena `pago.id_usuario` y `cancelacion.id_usuario` con el usuario
+creador/modificador de la reserva, deja `id_pago_original`/`motivo` nulos en el
+histórico y no elimina filas. Se puede ejecutar más de una vez.
 
 ## Conexión desde la aplicación
 

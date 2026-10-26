@@ -38,6 +38,14 @@ public class Pago {
 	@JoinColumn(name = "id_reserva", nullable = false)
 	private Reserva reserva;
 
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "id_usuario", nullable = false)
+	private Usuario usuario;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_pago_original")
+	private Pago pagoOriginal;
+
 	@Enumerated(EnumType.STRING)
 	@JdbcTypeCode(SqlTypes.NAMED_ENUM)
 	@Column(name = "tipo", nullable = false, columnDefinition = "tipo_movimiento_pago")
@@ -53,6 +61,9 @@ public class Pago {
 
 	@Column(name = "monto", nullable = false, precision = 10, scale = 2)
 	private BigDecimal monto;
+
+	@Column(name = "motivo")
+	private String motivo;
 
 	public Pago() {
 	}
@@ -71,6 +82,22 @@ public class Pago {
 
 	public void setReserva(Reserva reserva) {
 		this.reserva = reserva;
+	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+
+	public Pago getPagoOriginal() {
+		return pagoOriginal;
+	}
+
+	public void setPagoOriginal(Pago pagoOriginal) {
+		this.pagoOriginal = pagoOriginal;
 	}
 
 	public TipoMovimientoPago getTipo() {
@@ -103,6 +130,14 @@ public class Pago {
 
 	public void setMonto(BigDecimal monto) {
 		this.monto = monto;
+	}
+
+	public String getMotivo() {
+		return motivo;
+	}
+
+	public void setMotivo(String motivo) {
+		this.motivo = motivo;
 	}
 
 	@Override
