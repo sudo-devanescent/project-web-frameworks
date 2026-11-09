@@ -2,13 +2,13 @@
  * @file app.js
  * @description Punto de entrada de la aplicación HostOps.
  * Expone los manejadores usados por HTML inline en window, inicializa
- * el enrutador y arranca la renderización (login o vista).
+ * el enrutador, restaura la sesión contra la API y arranca la renderización.
  * @author HostOps Team
  * @version 1.0.0
  */
 
-import { filtros, listados } from './core/index.js';
-import { login, verCred, salir } from './auth/index.js';
+import { filtros, listados, SES, cerrarSesion } from './core/index.js';
+import { login, verCred, salir, restaurarSesion, entrar, mostrarLogin } from './auth/index.js';
 import {
   hDet,
   setEstado,
@@ -28,8 +28,11 @@ import {
   tgU,
   addCanal,
   nuevoUsuario,
+  pintarHab,
+  pintarRes,
+  pintarHue,
 } from './views/index.js';
-import { initRouter, renderizarVista } from './ui/index.js';
+import { initRouter, toast } from './ui/index.js';
 
 /* El HTML estático (login, navbar) y el HTML generado por las vistas usan
    manejadores inline (onclick/onchange/onsubmit/oninput) que resuelven los
@@ -65,10 +68,25 @@ Object.assign(window, {
   tgU,
   addCanal,
   nuevoUsuario,
+  // Pintado síncrono de listados filtrables (sin volver a consultar la API)
+  pintarHab,
+  pintarRes,
+  pintarHue,
 });
 
-// Listeners de hashchange, toggle de tema y preferencia del sistema
+// Sesión expirada o revocada por un administrador (evento desde core/api.js)
+addEventListener('sesion-expirada', () => {
+  if (!SES) return;
+  cerrarSesion();
+  mostrarLogin();
+  toast('Tu sesión ha expirado. Vuelve a iniciar sesión.', 'warning');
+});
+
+// Listeners de hashchange y toggle de tema
 initRouter();
 
-// Arranque: sin sesión muestra el login; con sesión, la vista del hash actual
-renderizarVista();
+// Arranque: login visible de inmediato; si hay sesión en el servidor, se restaura
+mostrarLogin();
+restaurarSesion().then((haySesion) => {
+  if (haySesion && SES) entrar();
+});

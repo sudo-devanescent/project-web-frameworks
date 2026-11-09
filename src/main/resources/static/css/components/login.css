@@ -227,98 +227,6 @@
   background: #f2f4f7;
 }
 
-.lg-roles {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.6rem;
-}
-
-.lg-roles input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.lg-roles label {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  margin: 0;
-  padding: 0.8rem;
-  border: 1px solid #e0e5eb;
-  border-radius: 0.8rem;
-  background: #fff;
-  cursor: pointer;
-  transition:
-    border-color 0.15s,
-    background 0.15s,
-    box-shadow 0.15s;
-}
-
-.lg-roles label:hover {
-  border-color: #528be6;
-}
-
-.lg-r {
-  margin-bottom: 0.15rem;
-  font-size: 1.25rem;
-  color: #528be6;
-  transition: color 0.15s;
-}
-
-.lg-roles b {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #151d28;
-}
-
-.lg-roles small {
-  font-size: 0.75rem;
-  line-height: 1.3;
-  color: #626f84;
-}
-
-.lg-chk {
-  position: absolute;
-  top: 0.55rem;
-  right: 0.55rem;
-  width: 1.2rem;
-  height: 1.2rem;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  font-size: 0.8rem;
-  background: #103973;
-  color: #fff;
-  box-shadow: 0 0 0 2px #fff;
-  opacity: 0;
-  transform: scale(0.6);
-  transition:
-    opacity 0.15s,
-    transform 0.15s;
-}
-
-.lg-roles input:checked + label {
-  border-color: #103973;
-  background: rgba(16, 57, 115, 0.06);
-  box-shadow: 0 0 0 1px #103973 inset;
-}
-
-.lg-roles input:checked + label .lg-r {
-  color: #103973;
-}
-
-.lg-roles input:checked + label .lg-chk {
-  opacity: 1;
-  transform: none;
-}
-
-.lg-roles input:focus-visible + label {
-  outline: 2px solid #1c64ca;
-  outline-offset: 2px;
-}
-
 .lg-err {
   margin-bottom: 1rem;
   padding: 0.6rem 0.85rem;
@@ -456,9 +364,7 @@
 @media (prefers-reduced-motion: reduce) {
   .lg-btn,
   .lg-btn i,
-  .lg-field input,
-  .lg-roles label,
-  .lg-chk {
+  .lg-field input {
     transition: none;
   }
 }

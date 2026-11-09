@@ -1,13 +1,15 @@
 /**
  * @file session.js
- * @description Gestión de sesión, autenticación y login/logout.
- * Maneja el estado SES (vía setters de state), login simplificado y transiciones de UI.
+ * @description Gestión de sesión, autenticación y login/logout contra la API.
+ * Maneja el estado SES (vía setters de state), el arranque con restauración
+ * de sesión y las transiciones de UI.
  * @author HostOps Team
  * @version 1.0.0
  */
 
 import { qs, esc } from '../core/utils.js';
-import { DB, SES, filtros, buscarPor, iniciarSesion, cerrarSesion } from '../core/state.js';
+import { SES, filtros, iniciarSesion, cerrarSesion } from '../core/state.js';
+import { api, ApiError, mensajeError } from '../core/api.js';
 import { NAV } from '../core/constants.js';
 import { puede } from './permissions.js';
 import { toast, ocultarModal } from '../ui/components.js';
@@ -19,40 +21,71 @@ import { renderizarVista } from '../ui/router.js';
 export const denegar = () => toast('Acceso denegado: tu rol no permite esta acción.', 'danger');
 
 /**
- * Maneja el submit del formulario de login.
- * Autenticación simplificada: usuario y credencial de 4 o más caracteres;
- * busca un usuario activo con el rol seleccionado.
+ * Maneja el submit del formulario de login contra POST /api/auth/login.
  * @param {Event} e - Evento submit
  */
-export function login(e) {
+export async function login(e) {
   e.preventDefault();
   const f = e.target;
   const n = f.u.value.trim();
-  const p = f.p.value.trim();
+  const p = f.p.value;
   const er = qs('#lerr');
+  const boton = f.querySelector('button[type="submit"]');
 
-  if (n.length < 4 || p.length < 4) {
-    er.textContent = 'El usuario y la credencial deben tener al menos 4 caracteres.';
+  if (!n || !p) {
+    er.textContent = 'Introduce usuario y contraseña.';
     er.classList.remove('d-none');
     return;
   }
 
-  const rol = f.r.value;
-  const u = DB.usuario.find((x) => x.activo && x.id_rol == buscarPor('rol', 'nombre', rol).id_rol);
-
-  if (!u) {
-    er.textContent = `No hay usuarios activos con el rol ${rol}.`;
+  boton.disabled = true;
+  try {
+    const sesion = await api.post('/api/auth/login', {
+      nombreUsuario: n,
+      contrasena: p,
+    });
+    iniciarSesion({
+      nombre: sesion.nombreCompleto || sesion.nombreUsuario,
+      rol: sesion.rol,
+      uid: sesion.idUsuario,
+    });
+    f.reset();
+    er.classList.add('d-none');
+    location.hash = '#dash';
+    entrar();
+  } catch (err) {
+    er.textContent =
+      err instanceof ApiError && err.status === 401
+        ? err.detail || 'Usuario o contraseña incorrectos.'
+        : mensajeError(err);
     er.classList.remove('d-none');
-    return;
+  } finally {
+    boton.disabled = false;
   }
+}
 
-  // uid: usuario del rol elegido, para las FK de auditoría (creador/modificador)
-  iniciarSesion({ nombre: n, rol, uid: u.id_usuario });
-
-  f.reset();
-  er.classList.add('d-none');
-  location.hash = '#dash';
-  entrar();
+/**
+ * Restaura la sesión al arrancar la aplicación: obtiene el token CSRF y
+ * consulta GET /api/auth/me; si hay sesión válida, establece SES.
+ * @returns {Promise<boolean>} true si había sesión activa
+ */
+export async function restaurarSesion() {
+  try {
+    await api.get('/api/auth/csrf');
+  } catch {
+    /* sin conexión: se reintentará en cada petición */
+  }
+  try {
+    const sesion = await api.get('/api/auth/me');
+    iniciarSesion({
+      nombre: sesion.nombreCompleto || sesion.nombreUsuario,
+      rol: sesion.rol,
+      uid: sesion.idUsuario,
+    });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -72,16 +105,21 @@ export function entrar() {
 
   // Info de usuario en la navbar
   qs('#usr').innerHTML =
-    `<i class="bi bi-person-circle"></i> ${esc(SES.nombre)} <span class="badge bg-white bg-opacity-25 border border-white border-opacity-25 text-white text-capitalize">${SES.rol}</span>`;
+    `<i class="bi bi-person-circle"></i> ${esc(SES.nombre)} <span class="badge bg-white bg-opacity-25 border border-white border-opacity-25 text-white text-capitalize">${esc(SES.rol)}</span>`;
 
   renderizarVista();
 }
 
 /**
- * Cierra sesión: limpia estado, resetea filtros y vuelve al login
+ * Cierra sesión en el servidor y limpia el estado local
  */
-export function salir() {
+export async function salir() {
   ocultarModal();
+  try {
+    await api.post('/api/auth/logout');
+  } catch {
+    /* la sesión local se limpia igualmente */
+  }
   cerrarSesion();
 
   filtros.hab = { estado: '', tipo: '' };

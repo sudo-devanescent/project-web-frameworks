@@ -1,8 +1,8 @@
 /**
  * @file rules.js
  * @description Reglas de negocio y validaciones de HostOps.
- * Equivalen a constraints, triggers y vistas del esquema SQL.
- * Lee DB (estado) pero no la muta directamente.
+ * Pre-validaciones de UX equivalentes a constraints y triggers del esquema SQL;
+ * el servidor sigue siendo la autoridad. Lee la caché DB pero no la muta.
  * @author HostOps Team
  * @version 1.0.0
  */
@@ -30,48 +30,10 @@ export const noches = (a, b) => (Date.parse(b) - Date.parse(a)) / 864e5;
 export const solapa = (a1, b1, a2, b2) => a1 < b2 && b1 > a2;
 
 /**
- * Calcula el saldo de una reserva (equivale a la vista v_saldo_reserva)
- * @param {number} idReserva - ID de la reserva
- * @returns {Object} { al: alojamiento, pe: penalidades, tp: total a pagar,
- *                     co: cobrado neto, sp: saldo pendiente, rp: reembolso pendiente }
- */
-export const saldo = (idReserva) => {
-  const ds = DB[TABLA.det].filter((d) => d.id_reserva == idReserva);
-
-  // Alojamiento: noches * tarifa por cada detalle no cancelado
-  const al = ds
-    .filter((d) => d.estado != 'cancelada')
-    .reduce(
-      (s, d) => s + noches(d.fecha_entrada_prevista, d.fecha_salida_prevista) * d.tarifa_noche,
-      0,
-    );
-
-  // Penalidades: suma de penalidades de las cancelaciones
-  const pe = ds.reduce(
-    (s, d) => s + (DB.cancelacion.find((c) => c.id_detalle == d.id_detalle)?.penalidad || 0),
-    0,
-  );
-
-  // Cobrado neto: anticipos y saldos suman, reembolsos restan
-  const co = DB.pago
-    .filter((p) => p.id_reserva == idReserva)
-    .reduce((s, p) => s + (p.tipo == 'reembolso' ? -p.monto : p.monto), 0);
-
-  const tp = al + pe; // Total a pagar
-  return {
-    al,
-    pe,
-    tp,
-    co,
-    sp: Math.max(tp - co, 0), // Saldo pendiente
-    rp: Math.max(co - tp, 0), // Reembolso pendiente
-  };
-};
-
-/**
  * Verifica conflictos de una habitación en un rango de fechas.
- * Comprueba solapamiento con reservas activas y con bloqueos de mantenimiento.
- * (ex = id_detalle a ignorar al editar una reserva existente)
+ * Comprueba solapamiento con reservas activas y con bloqueos de mantenimiento
+ * usando el snapshot de disponibilidad cargado en la caché.
+ * (ex = idDetalle a ignorar al editar una reserva existente)
  * @param {number} idHabitacion
  * @param {string} a - Fecha entrada
  * @param {string} b - Fecha salida
@@ -83,18 +45,20 @@ export const conflicto = (idHabitacion, a, b, ex) => {
   if (
     DB[TABLA.det].some(
       (d) =>
-        d.id_habitacion == idHabitacion &&
+        d.idHabitacion == idHabitacion &&
         d.estado != 'cancelada' &&
-        d.id_detalle != ex &&
-        a < d.fecha_salida_prevista &&
-        b > d.fecha_entrada_prevista,
+        d.idDetalle != ex &&
+        a < d.fechaSalidaPrevista &&
+        b > d.fechaEntradaPrevista,
     )
   )
     return 'se solapa con otra reserva activa';
 
   // Conflicto con bloqueos de mantenimiento
   if (
-    DB[TABLA.bl].some((x) => x.id_habitacion == idHabitacion && a <= x.fecha_fin && b > x.fecha_inicio)
+    DB[TABLA.bl].some(
+      (x) => x.idHabitacion == idHabitacion && a <= x.fechaFin && b > x.fechaInicio,
+    )
   )
     return 'está bloqueada por mantenimiento en esas fechas';
 
@@ -102,7 +66,7 @@ export const conflicto = (idHabitacion, a, b, ex) => {
 };
 
 /**
- * Valida UNA línea de reserva {h,a,b,o[]} frente a la base y a las demás líneas
+ * Valida UNA línea de reserva {h,a,b,o[]} frente a la caché y a las demás líneas
  * @param {Object} l - Línea con { h, a, b, o: [idsHuésped] }
  * @param {Object[]} otras - Otras líneas del mismo formulario
  * @param {Object} [opts] - Opciones: { ex, minA, minB }
@@ -111,7 +75,7 @@ export const conflicto = (idHabitacion, a, b, ex) => {
 export const validarLinea = (l, otras, { ex = null, minA = null, minB = null } = {}) => {
   if (!l.h || !l.a || !l.b) return '';
 
-  const h = buscarPor('habitacion', 'id_habitacion', l.h);
+  const h = buscarPor('habitacion', 'idHabitacion', l.h);
   if (!h) return 'Habitación no encontrada.';
 
   if (l.b <= l.a) return 'La salida debe ser posterior a la entrada.';
@@ -136,30 +100,15 @@ export const validarLinea = (l, otras, { ex = null, minA = null, minB = null } =
 };
 
 /**
- * Máximo de ocupantes asignados hoy a una habitación
- * (para validar que la capacidad no baje por debajo de los ocupantes actuales)
- * @param {number} idHabitacion
- * @returns {number}
- */
-export const maxOcupantes = (idHabitacion) =>
-  Math.max(
-    0,
-    ...DB[TABLA.det]
-      .filter(
-        (d) => d.id_habitacion == idHabitacion && ['confirmada', 'en_estadia'].includes(d.estado),
-      )
-      .map((d) => DB[TABLA.dh].filter((x) => x.id_detalle == d.id_detalle).length),
-  );
-
-/**
  * Valida si se puede hacer check-in en un detalle de reserva
- * @param {Object} d - Detalle de reserva
- * @param {Object} h - Habitación asociada
+ * (pre-validación de UX; el servidor también lo comprueba)
+ * @param {Object} d - Detalle de reserva (fechaEntradaPrevista, estado)
+ * @param {Object} h - Habitación asociada (estado, numero)
  * @returns {string} Mensaje de error o '' si el check-in es válido
  */
 export const errorCheckin = (d, h) => {
-  if (d.fecha_entrada_prevista > HOY)
-    return `Aún no es la fecha de entrada (${d.fecha_entrada_prevista}).`;
+  if (d.fechaEntradaPrevista > HOY)
+    return `Aún no es la fecha de entrada (${d.fechaEntradaPrevista}).`;
   if (h.estado != 'disponible')
     return `La habitación ${h.numero} está en estado «${h.estado}»; debe estar disponible.`;
   return '';
@@ -167,14 +116,11 @@ export const errorCheckin = (d, h) => {
 
 /**
  * Objeto agregado con todas las reglas: interfaz principal usada por las vistas
- * (equivale al objeto `reglas` original del monolito)
  */
 export const reglas = {
   noches,
   solapa,
-  saldo,
   conflicto,
   validarLinea,
-  maxOcupantes,
   errorCheckin,
 };

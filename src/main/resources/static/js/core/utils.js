@@ -32,12 +32,6 @@ export const fechaRelativa = (n) => {
 };
 
 /**
- * Timestamp ISO actual
- * @returns {string}
- */
-export const ahora = () => new Date().toISOString();
-
-/**
  * Formatea número como moneda peruana (Soles)
  * @param {number} n
  * @returns {string} Ej: "S/ 1,234.56"
@@ -58,15 +52,6 @@ const ENTIDADES = { '&': 'amp', '<': 'lt', '>': 'gt', '"': 'quot' };
  */
 export const esc = (s) =>
   String(s ?? '').replace(/[&<>"]/g, (c) => '&' + ENTIDADES[c] + ';');
-
-/**
- * Convierte array de arrays a array de objetos usando las claves dadas
- * @param {string[]} keys - Nombres de propiedades
- * @param {any[][]} rows - Filas de datos
- * @returns {Object[]}
- */
-export const filasDesdeArreglo = (keys, rows) =>
-  rows.map((r) => Object.fromEntries(keys.map((k, i) => [k, r[i]])));
 
 /**
  * Nombre completo de huésped a partir de su objeto

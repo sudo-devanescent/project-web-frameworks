@@ -8,6 +8,7 @@
 
 import { COLOR_BADGE } from '../core/constants.js';
 import { esc, qs } from '../core/utils.js';
+import { mensajeError } from '../core/api.js';
 import { renderizarVista } from './router.js';
 
 /**
@@ -129,10 +130,11 @@ export function toast(mensaje, tipo = 'success') {
 let modalBs = null;
 
 /**
- * Abre modal dinámico con formulario y callback de validación
+ * Abre modal dinámico con formulario y callback de validación/acción
  * @param {string} titulo - Título del modal
  * @param {string} bodyHtml - HTML del body (debe contener <form> si hay callback ok)
- * @param {Function|null} ok - Callback(validación): recibe FormData, retorna string error o null/undefined si OK
+ * @param {Function|null} ok - Callback(async): recibe FormData y devuelve/promete
+ *   string de error (no cierra) o null/undefined si OK (cierra y re-renderiza)
  * @param {string} [labelBtn='Guardar'] - Texto botón principal
  */
 export function modal(titulo, bodyHtml, ok, labelBtn = 'Guardar') {
@@ -151,18 +153,28 @@ export function modal(titulo, bodyHtml, ok, labelBtn = 'Guardar') {
       ev.preventDefault();
       qs('#mok').click();
     };
-    qs('#mok').onclick = () => {
+    qs('#mok').onclick = async () => {
       form.classList.add('was-validated');
       if (!form.checkValidity()) return;
-      const error = ok(new FormData(form));
-      if (error) {
+      const boton = qs('#mok');
+      boton.disabled = true;
+      try {
+        const error = await ok(new FormData(form));
+        if (error) {
+          const alert = qs('#err');
+          alert.textContent = error;
+          alert.classList.remove('d-none');
+          return;
+        }
+        modalBs.hide();
+        renderizarVista();
+      } catch (e) {
         const alert = qs('#err');
-        alert.textContent = error;
+        alert.textContent = mensajeError(e);
         alert.classList.remove('d-none');
-        return;
+      } finally {
+        boton.disabled = false;
       }
-      modalBs.hide();
-      renderizarVista();
     };
   }
 
@@ -182,7 +194,8 @@ export function ocultarModal() {
  * Sustituye al confirm() nativo del navegador, que no sigue el tema de la app.
  * @param {string} titulo - Título del modal
  * @param {string} mensaje - Mensaje visible (se escapa con esc())
- * @param {Function} onOk - Callback a ejecutar al confirmar
+ * @param {Function} onOk - Callback(async) a ejecutar al confirmar; si lanza
+ *   un error se muestra como toast
  * @param {string} [labelBtn='Confirmar'] - Texto del botón principal
  */
 export function confirmar(titulo, mensaje, onOk, labelBtn = 'Confirmar') {
@@ -194,9 +207,13 @@ export function confirmar(titulo, mensaje, onOk, labelBtn = 'Confirmar') {
     `<button class="btn btn-primary" id="mok">${labelBtn}</button>` +
     '<button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>';
 
-  qs('#mok').onclick = () => {
+  qs('#mok').onclick = async () => {
     modalBs.hide();
-    onOk();
+    try {
+      await onOk();
+    } catch (e) {
+      toast(mensajeError(e), 'danger');
+    }
   };
 
   modalBs = modalBs || new bootstrap.Modal('#m');

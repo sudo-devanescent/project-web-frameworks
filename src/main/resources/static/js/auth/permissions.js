@@ -21,21 +21,3 @@ export const puede = (key) => !!SES && PERM[SES.rol]?.includes(key);
  * @returns {boolean}
  */
 export const esAdmin = () => SES?.rol === 'administrador';
-
-/**
- * Obtiene el rol del usuario actual
- * @returns {string|null}
- */
-export const getRol = () => SES?.rol ?? null;
-
-/**
- * Obtiene el UID del usuario actual (para auditoría FK)
- * @returns {number|null}
- */
-export const getUid = () => SES?.uid ?? null;
-
-/**
- * Obtiene el nombre del usuario actual
- * @returns {string|null}
- */
-export const getNombre = () => SES?.nombre ?? null;

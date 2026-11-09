@@ -54,9 +54,8 @@ export const PERM = {
   recepcionista: ['dash', 'hab', 'res', 'hue', 'fin'],
 };
 
-/** Aliases de nombres de tablas para evitar strings mágicos */
+/** Aliases de nombres de colecciones en la caché DB para evitar strings mágicos */
 export const TABLA = {
   bl: 'bloqueo_habitacion',
   det: 'detalle_reserva',
-  dh: 'detalle_huesped',
 };

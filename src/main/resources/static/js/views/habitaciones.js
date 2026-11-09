@@ -1,14 +1,16 @@
 /**
  * @file habitaciones.js
- * @description Vista Habitaciones: grid con filtros, modal detalle, editar, bloquear/liberar.
+ * @description Vista Habitaciones: grid con filtros, modal detalle, editar,
+ * bloquear/liberar y cambio de estado contra la API.
  * @author HostOps Team
  * @version 1.0.0
  */
 
-import { DB, filtros, listados, HOY, buscarPor, siguienteId } from '../core/state.js';
+import { DB, filtros, listados, HOY, buscarPor } from '../core/state.js';
 import { ESTH, TIPOS, TABLA } from '../core/constants.js';
-import { soles } from '../core/utils.js';
-import { reglas } from '../core/rules.js';
+import { soles, esc } from '../core/utils.js';
+import { api, mensajeError } from '../core/api.js';
+import { refrescarCatalogo } from '../core/catalogos.js';
 import { esAdmin } from '../auth/permissions.js';
 import { denegar } from '../auth/session.js';
 import {
@@ -20,6 +22,7 @@ import {
   modal,
   toast,
 } from '../ui/components.js';
+import { renderizarVista, tokenRender } from '../ui/router.js';
 
 /**
  * Renderiza la vista Habitaciones
@@ -29,16 +32,26 @@ export function hab() {
   return (
     encabezado(
       'Habitaciones',
-      `<select class="form-select w-auto" aria-label="Filtrar por estado" onchange="filtros.hab.estado=this.value;listados.hab()"><option value="">Todos los estados</option>${opcionesLista(ESTH, filtros.hab.estado)}</select>
-  <select class="form-select w-auto" aria-label="Filtrar por tipo" onchange="filtros.hab.tipo=this.value;listados.hab()"><option value="">Todos los tipos</option>${opcionesLista(TIPOS, filtros.hab.tipo)}</select>`,
+      `<select class="form-select w-auto" aria-label="Filtrar por estado" onchange="filtros.hab.estado=this.value;pintarHab()"><option value="">Todos los estados</option>${opcionesLista(ESTH, filtros.hab.estado)}</select>
+  <select class="form-select w-auto" aria-label="Filtrar por tipo" onchange="filtros.hab.tipo=this.value;pintarHab()"><option value="">Todos los tipos</option>${opcionesLista(TIPOS, filtros.hab.tipo)}</select>`,
     ) + '<div class="row g-3" id="l"></div>'
   );
 }
 
 /**
- * Listado de habitaciones con filtros aplicados
+ * Descarga habitaciones desde la API y pinta el grid
  */
-listados.hab = () => {
+listados.hab = async () => {
+  const token = tokenRender;
+  await refrescarCatalogo('habitacion');
+  if (token !== tokenRender) return;
+  pintarHab();
+};
+
+/**
+ * Pinta el grid de habitaciones con los filtros aplicados (datos en caché)
+ */
+export function pintarHab() {
   const f = filtros.hab;
   const html = DB.habitacion
     .filter((h) => (!f.estado || h.estado === f.estado) && (!f.tipo || h.tipo === f.tipo))
@@ -54,9 +67,9 @@ listados.hab = () => {
         <div class="text-capitalize fw-semibold">${h.tipo}</div>
         <div class="small text-body-secondary mb-3"><i class="bi bi-people"></i> ${h.capacidad} · ${soles(h.tarifa)} / noche</div>
         <div class="d-flex flex-wrap gap-2">
-          <button class="btn btn-sm btn-outline-primary" onclick="hDet(${h.id_habitacion})">Detalles</button>
-          <button class="btn btn-sm btn-outline-secondary" onclick="bloquear(${h.id_habitacion})"><i class="bi bi-wrench"></i> Bloquear</button>
-          ${esAdmin() ? `<button class="btn btn-sm btn-outline-secondary" onclick="editarHab(${h.id_habitacion})" title="Editar"><i class="bi bi-pencil"></i></button>` : ''}
+          <button class="btn btn-sm btn-outline-primary" onclick="hDet(${h.idHabitacion})">Detalles</button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="bloquear(${h.idHabitacion})"><i class="bi bi-wrench"></i> Bloquear</button>
+          ${esAdmin() ? `<button class="btn btn-sm btn-outline-secondary" onclick="editarHab(${h.idHabitacion})" title="Editar"><i class="bi bi-pencil"></i></button>` : ''}
         </div>
       </div>
     </article>
@@ -65,23 +78,27 @@ listados.hab = () => {
     .join('') || '<p class="text-body-secondary">No hay habitaciones con esos filtros.</p>';
 
   document.querySelector('#l').innerHTML = html;
-};
+}
 
 /**
- * Modal detalle de habitación: info, estado, bloqueos, reservas activas
+ * Modal detalle de habitación: info, estado, bloqueos y reservas activas
  * @param {number} id - ID habitación
  */
-export function hDet(id) {
-  const h = buscarPor('habitacion', 'id_habitacion', id);
-  const bl = DB[TABLA.bl].filter((b) => b.id_habitacion === id);
-  const ds = DB[TABLA.det].filter(
-    (d) => d.id_habitacion === id && ['confirmada', 'en_estadia'].includes(d.estado),
-  );
-  const ocu = ds.some((d) => d.estado === 'en_estadia');
+export async function hDet(id) {
+  try {
+    const h = buscarPor('habitacion', 'idHabitacion', id);
+    if (!h) return;
+    const [bl, ds] = await Promise.all([
+      api.get('/api/habitaciones/' + id + '/bloqueos'),
+      api.get('/api/detalles-reserva?habitacionId=' + id),
+    ]);
+    DB[TABLA.bl] = [...DB[TABLA.bl].filter((x) => x.idHabitacion != id), ...bl];
+    const activos = ds.filter((d) => ['confirmada', 'en_estadia'].includes(d.estado));
+    const ocu = h.estado === 'ocupada';
 
-  modal(
-    'Habitación ' + h.numero,
-    `<div class="row g-3">
+    modal(
+      'Habitación ' + h.numero,
+      `<div class="row g-3">
     <div class="col-md-6">
       <dl class="mb-0">
         <dt>Tipo</dt><dd class="text-capitalize">${h.tipo}</dd>
@@ -106,7 +123,7 @@ export function hDet(id) {
         bl
           .map(
             (b) =>
-              `<tr><td>${b.fecha_inicio}</td><td>${b.fecha_fin}</td><td>${b.motivo}</td><td><button class="btn btn-sm btn-outline-danger" onclick="delBloqueo(${b.id_bloqueo})">Liberar</button></td></tr>`,
+              `<tr><td>${b.fechaInicio}</td><td>${b.fechaFin}</td><td>${esc(b.motivo)}</td><td><button class="btn btn-sm btn-outline-danger" onclick="delBloqueo(${b.idBloqueo})">Liberar</button></td></tr>`,
           )
           .join(''),
       )}
@@ -116,28 +133,37 @@ export function hDet(id) {
       <h3 class="h6">Reservas activas</h3>
       ${tabla(
         ['Reserva', 'Entrada', 'Salida', 'Estado'],
-        ds
+        activos
           .map(
             (d) =>
-              `<tr><td>#${d.id_reserva}</td><td>${d.fecha_entrada_prevista}</td><td>${d.fecha_salida_prevista}</td><td>${badgeEstado(d.estado)}</td></tr>`,
+              `<tr><td>#${d.idReserva}</td><td>${d.fechaEntradaPrevista}</td><td>${d.fechaSalidaPrevista}</td><td>${badgeEstado(d.estado)}</td></tr>`,
           )
           .join(''),
       )}
     </div>
   </div>`,
-  );
+    );
+  } catch (e) {
+    toast(mensajeError(e), 'danger');
+  }
 }
 
 /**
- * Cambia estado de habitación y refresca vista
+ * Cambia el estado de la habitación (PATCH explícito) y refresca el grid
  * @param {number} id
  * @param {string} estado
  */
-export function setEstado(id, estado) {
-  buscarPor('habitacion', 'id_habitacion', id).estado = estado;
-  toast('Estado actualizado a ' + estado);
-  // Re-render para actualizar grid y mantener modal abierto
-  listados.hab();
+export async function setEstado(id, estado) {
+  try {
+    const h = await api.patch('/api/habitaciones/' + id + '/estado', { estado });
+    const i = DB.habitacion.findIndex((x) => x.idHabitacion == id);
+    if (i >= 0) DB.habitacion[i] = h;
+    toast('Estado actualizado a ' + estado);
+    pintarHab();
+  } catch (e) {
+    toast(mensajeError(e), 'danger');
+    await hDet(id); // re-sincroniza el modal con el estado real del servidor
+  }
 }
 
 /**
@@ -146,7 +172,8 @@ export function setEstado(id, estado) {
  */
 export function editarHab(id) {
   if (!esAdmin()) return denegar();
-  const h = buscarPor('habitacion', 'id_habitacion', id);
+  const h = buscarPor('habitacion', 'idHabitacion', id);
+  if (!h) return;
 
   modal(
     'Editar habitación ' + h.numero,
@@ -155,16 +182,17 @@ export function editarHab(id) {
     ${campoForm('Capacidad', `<input type="number" name="c" class="form-control" min="1" max="12" step="1" value="${h.capacidad}" required>`, 'col-md-4')}
     ${campoForm('Tarifa por noche (S/)', `<input type="number" name="r" class="form-control" min="0" step="0.01" value="${h.tarifa}" required>`, 'col-md-4')}
   </form>
-  <p class="small text-body-secondary mt-3 mb-0">La nueva tarifa solo se aplica a reservas futuras: las existentes conservan su tarifa congelada.</p>`,
-    (fd) => {
-      const c = +fd.get('c');
-      const mx = reglas.maxOcupantes(id);
-      if (c < mx)
-        return `La capacidad no puede ser menor a ${mx}: hay una reserva activa con ${mx} huéspedes asignados.`;
-      h.tipo = fd.get('t');
-      h.capacidad = c;
-      h.tarifa = +fd.get('r');
-      toast('Habitación ' + h.numero + ' actualizada');
+  <p class="small text-body-secondary mt-3 mb-0">La nueva tarifa solo se aplica a reservas futuras: las existentes conservan su tarifa congelada. El servidor valida que la capacidad no baje por debajo de los ocupantes de reservas activas.</p>`,
+    async (fd) => {
+      const actualizada = await api.put('/api/habitaciones/' + id, {
+        numero: h.numero,
+        tipo: fd.get('t'),
+        capacidad: +fd.get('c'),
+        tarifa: +fd.get('r'),
+      });
+      const i = DB.habitacion.findIndex((x) => x.idHabitacion == id);
+      if (i >= 0) DB.habitacion[i] = actualizada;
+      toast('Habitación ' + actualizada.numero + ' actualizada');
     },
   );
 }
@@ -173,74 +201,101 @@ export function editarHab(id) {
  * Modal bloquear habitación por mantenimiento
  * @param {number} id
  */
-export function bloquear(id) {
-  const h = buscarPor('habitacion', 'id_habitacion', id);
+export async function bloquear(id) {
+  const h = buscarPor('habitacion', 'idHabitacion', id);
+  if (!h) return;
+  try {
+    // Datos frescos para pre-validar conflictos de fechas
+    const [ds, bl] = await Promise.all([
+      api.get('/api/detalles-reserva'),
+      api.get('/api/habitaciones/' + id + '/bloqueos'),
+    ]);
+    DB[TABLA.det] = ds;
+    DB[TABLA.bl] = [...DB[TABLA.bl].filter((x) => x.idHabitacion != id), ...bl];
 
-  modal(
-    'Bloquear habitación ' + h.numero,
-    `<form class="row g-3 needs-validation" novalidate>
+    modal(
+      'Bloquear habitación ' + h.numero,
+      `<form class="row g-3 needs-validation" novalidate>
     ${campoForm('Desde (inclusive)', `<input type="date" name="a" class="form-control" min="${HOY}" required>`)}
     ${campoForm('Hasta (inclusive)', `<input type="date" name="b" class="form-control" min="${HOY}" required>`)}
     ${campoForm('Motivo', '<input name="m" class="form-control" maxlength="200" required>', 'col-12')}
   </form>`,
-    (fd) => {
-      const a = fd.get('a');
-      const b = fd.get('b');
-      if (b < a) return 'La fecha final no puede ser anterior a la inicial.';
+      async (fd) => {
+        const a = fd.get('a');
+        const b = fd.get('b');
+        if (b < a) return 'La fecha final no puede ser anterior a la inicial.';
 
-      // Conflicto con reservas activas
-      if (
-        DB[TABLA.det].some(
-          (d) =>
-            d.id_habitacion === id &&
-            ['confirmada', 'en_estadia'].includes(d.estado) &&
-            d.fecha_entrada_prevista <= b &&
-            d.fecha_salida_prevista > a,
+        // Conflicto con reservas activas
+        if (
+          DB[TABLA.det].some(
+            (d) =>
+              d.idHabitacion == id &&
+              ['confirmada', 'en_estadia'].includes(d.estado) &&
+              d.fechaEntradaPrevista <= b &&
+              d.fechaSalidaPrevista > a,
+          )
         )
-      )
-        return 'El bloqueo se cruza con reservas activas de la habitación ' + h.numero + '.';
+          return 'El bloqueo se cruza con reservas activas de la habitación ' + h.numero + '.';
 
-      // Conflicto con otros bloqueos
-      if (
-        DB[TABLA.bl].some((x) => x.id_habitacion === id && a <= x.fecha_fin && b >= x.fecha_inicio)
-      )
-        return 'Ya existe un bloqueo que se solapa con esas fechas.';
+        // Conflicto con otros bloqueos
+        if (
+          DB[TABLA.bl].some((x) => x.idHabitacion == id && a <= x.fechaFin && b >= x.fechaInicio)
+        )
+          return 'Ya existe un bloqueo que se solapa con esas fechas.';
 
-      DB[TABLA.bl].push({
-        id_bloqueo: siguienteId(TABLA.bl, 'id_bloqueo'),
-        id_habitacion: id,
-        fecha_inicio: a,
-        fecha_fin: b,
-        motivo: fd.get('m'),
-      });
+        const creado = await api.post('/api/habitaciones/' + id + '/bloqueos', {
+          fechaInicio: a,
+          fechaFin: b,
+          motivo: fd.get('m'),
+        });
+        DB[TABLA.bl] = [...DB[TABLA.bl].filter((x) => x.idHabitacion != id), creado];
 
-      if (a <= HOY && HOY <= b) h.estado = 'mantenimiento';
-      toast('Bloqueo registrado');
-    },
-    'Bloquear',
-  );
+        // El backend no cambia el estado: si el bloqueo cubre hoy, se pide explícitamente
+        if (a <= HOY && HOY <= b && h.estado !== 'ocupada' && h.estado !== 'mantenimiento') {
+          const nueva = await api.patch('/api/habitaciones/' + id + '/estado', {
+            estado: 'mantenimiento',
+          });
+          const i = DB.habitacion.findIndex((x) => x.idHabitacion == id);
+          if (i >= 0) DB.habitacion[i] = nueva;
+        }
+        toast('Bloqueo registrado');
+      },
+      'Bloquear',
+    );
+  } catch (e) {
+    toast(mensajeError(e), 'danger');
+  }
 }
 
 /**
- * Libera un bloqueo y actualiza estado habitación si corresponde
+ * Libera un bloqueo y vuelve a la disponibilidad si corresponde
  * @param {number} idBloqueo
  */
-export function delBloqueo(idBloqueo) {
-  const b = buscarPor(TABLA.bl, 'id_bloqueo', idBloqueo);
-  const h = buscarPor('habitacion', 'id_habitacion', b.id_habitacion);
+export async function delBloqueo(idBloqueo) {
+  const b = buscarPor(TABLA.bl, 'idBloqueo', idBloqueo);
+  if (!b) return;
+  try {
+    await api.del('/api/bloqueos/' + idBloqueo);
+    DB[TABLA.bl] = DB[TABLA.bl].filter((x) => x.idBloqueo != idBloqueo);
 
-  DB[TABLA.bl] = DB[TABLA.bl].filter((x) => x !== b);
+    let h = await api.get('/api/habitaciones/' + b.idHabitacion);
+    if (
+      h.estado === 'mantenimiento' &&
+      !DB[TABLA.bl].some(
+        (x) => x.idHabitacion == b.idHabitacion && x.fechaInicio <= HOY && HOY <= x.fechaFin,
+      )
+    ) {
+      h = await api.patch('/api/habitaciones/' + b.idHabitacion + '/estado', {
+        estado: 'disponible',
+      });
+    }
+    const i = DB.habitacion.findIndex((x) => x.idHabitacion == b.idHabitacion);
+    if (i >= 0) DB.habitacion[i] = h;
 
-  if (
-    h.estado === 'mantenimiento' &&
-    !DB[TABLA.bl].some(
-      (x) => x.id_habitacion === h.id_habitacion && x.fecha_inicio <= HOY && HOY <= x.fecha_fin,
-    )
-  )
-    h.estado = 'disponible';
-
-  toast('Bloqueo liberado');
-  hDet(h.id_habitacion);
-  listados.hab();
+    toast('Bloqueo liberado');
+    await renderizarVista();
+    await hDet(b.idHabitacion);
+  } catch (e) {
+    toast(mensajeError(e), 'danger');
+  }
 }
-
