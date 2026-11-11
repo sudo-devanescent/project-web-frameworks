@@ -37,6 +37,8 @@ application-local.properties
 application-local.yml
 application-secret.properties
 application-secret.yml
+# Archivos de linting
+.markdownlint.json
 
 # =====================================================================
 # 4. BASE DE DATOS Y DOCKER (PostgreSQL local)
